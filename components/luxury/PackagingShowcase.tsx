@@ -42,13 +42,8 @@ export default function PackagingShowcase() {
 
       <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-16 items-center">
         {/* Left Side: Unboxing Animation Stage */}
-          <div className="w-full h-full flex items-center justify-center p-6">
-            <img
-              src="/images/ringandringbox.jpg"
-              alt="Ring and Ring Box"
-              className="w-full h-full object-contain drop-shadow-2xl rounded-sm"
-            />
-          </div>
+        <div className="w-full lg:w-1/2 flex items-center justify-center h-[450px] relative">
+
         </div>
 
         {/* Right Side: Editorial Descriptions */}
@@ -82,9 +77,7 @@ export default function PackagingShowcase() {
                 transition={{ duration: 0.5, delay: idx * 0.15 }}
                 className="flex gap-4 items-start"
               >
-                <svg className="w-4 h-4 text-[#0B5E64] mt-0.5 shrink-0" viewBox="0 0 100 100" fill="currentColor">
-                  <path d="M50 5L63 38L96 50L63 62L50 95L37 62L4 50L37 38L50 5Z" />
-                </svg>
+                <div className="w-2.5 h-2.5 rounded-full border border-silver-chrome mt-1.5 shrink-0" />
                 <div className="space-y-0.5">
                   <h4 className="text-xs font-semibold uppercase text-black tracking-wider">
                     {item.title}
