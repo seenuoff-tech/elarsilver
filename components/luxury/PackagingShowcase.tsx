@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 export default function PackagingShowcase() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -43,7 +44,22 @@ export default function PackagingShowcase() {
       <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-16 items-center">
         {/* Left Side: Unboxing Animation Stage */}
         <div className="w-full lg:w-1/2 flex items-center justify-center h-[450px] relative">
-
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="w-full h-full relative rounded-2xl overflow-hidden shadow-2xl"
+          >
+            <Image
+              src="/images/ringandringbox.jpg"
+              alt="Elara Silver Luxury Packaging"
+              fill
+              className="object-cover object-center"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              priority
+            />
+          </motion.div>
         </div>
 
         {/* Right Side: Editorial Descriptions */}
