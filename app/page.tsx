@@ -11,7 +11,7 @@ import NewArrivals from '../components/NewArrivals';
 import Testimonials from '../components/Testimonials';
 import PackagingShowcase from '../components/luxury/PackagingShowcase';
 import CraftsmanshipTimeline from '../components/luxury/CraftsmanshipTimeline';
-
+import StoreFront from '../components/luxury/StoreFront';
 
 import ConciergeAssistant from '../components/luxury/ConciergeAssistant';
 
@@ -49,6 +49,11 @@ export default function Home() {
 
 
 
+
+      {/* New Store Front Section */}
+      <div className="relative z-10">
+        <StoreFront />
+      </div>
 
       {/* 3. Immersive Parallax Quote Section */}
       <section className="relative bg-[#ffffff] py-40 px-6 overflow-hidden z-10">

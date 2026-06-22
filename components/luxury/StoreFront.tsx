@@ -1,0 +1,55 @@
+'use client';
+
+import React from 'react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+
+export default function StoreFront() {
+  return (
+    <section className="relative bg-white py-24 px-6 md:px-12 z-10 overflow-hidden">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
+        
+        {/* Left Side: Heading & Content */}
+        <motion.div 
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="w-full lg:w-1/2 space-y-6"
+        >
+          <span className="text-xs md:text-sm font-semibold tracking-[0.4em] text-silver-chrome uppercase block">
+            The Experience
+          </span>
+          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight uppercase leading-none text-[#0B5E64]">
+            Our Flagship Boutique
+          </h2>
+          <div className="w-16 h-[2px] bg-[#0B5E64]/20" />
+          <p className="text-neutral-600 font-light text-base md:text-lg leading-relaxed">
+            Step into the world of ELARA SILVER. Our flagship boutique is designed to be an immersive gallery of luminous artistry. Experience the weight, the brilliance, and the unparalleled craftsmanship of our collections in person.
+          </p>
+          <p className="text-neutral-500 font-light text-sm md:text-base leading-relaxed">
+            Discover exclusive in-store collections and enjoy personalized styling consultations with our dedicated artisans.
+          </p>
+        </motion.div>
+
+        {/* Right Side: Store Front Image */}
+        <motion.div 
+          initial={{ opacity: 0, x: 30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          className="w-full lg:w-1/2 relative h-[500px] rounded-2xl overflow-hidden shadow-2xl"
+        >
+          <Image
+            src="/images/store-front.jpg"
+            alt="Elara Silver Store Front"
+            fill
+            className="object-cover object-center"
+            sizes="(max-width: 1024px) 100vw, 50vw"
+          />
+        </motion.div>
+
+      </div>
+    </section>
+  );
+}
