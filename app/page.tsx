@@ -13,8 +13,6 @@ import PackagingShowcase from '../components/luxury/PackagingShowcase';
 import CraftsmanshipTimeline from '../components/luxury/CraftsmanshipTimeline';
 import StoreFront from '../components/luxury/StoreFront';
 
-import ConciergeAssistant from '../components/luxury/ConciergeAssistant';
-
 export default function Home() {
   return (
     <div className="bg-[#ffffff] text-black selection:bg-[#ffffff]/20 relative min-h-screen">
@@ -75,9 +73,6 @@ export default function Home() {
 
       {/* Testimonials Section */}
       <Testimonials />
-
-      {/* Floating Concierge Assistant Widget */}
-      <ConciergeAssistant />
     </div>
   );
 }
