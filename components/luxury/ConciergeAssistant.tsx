@@ -63,8 +63,8 @@ export default function ConciergeAssistant() {
             {/* Header */}
             <div className="p-5 border-b border-black/10 flex justify-between items-center bg-[#ffffff]/40">
               <div className="flex items-center gap-3">
-                <svg className="w-5 h-5 text-silver-chrome" viewBox="0 0 100 100" fill="none">
-                  <polygon points="50,15 62,38 88,42 68,58 75,85 50,70 25,85 32,58 12,42 38,38" stroke="currentColor" strokeWidth="2.5" />
+                <svg className="w-5 h-5 text-silver-chrome" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
                 <div>
                   <h4 className="text-xs font-bold tracking-widest text-black uppercase">
@@ -157,8 +157,8 @@ export default function ConciergeAssistant() {
           {/* Pulsing halo */}
           <div className="absolute inset-0 rounded-full border border-silver-chrome opacity-20 group-hover:scale-115 transition-transform duration-700 animate-ping pointer-events-none" />
 
-          <svg className="w-6 h-6 text-white transition-colors duration-300" viewBox="0 0 100 100" fill="none">
-            <polygon points="50,15 62,38 88,42 68,58 75,85 50,70 25,85 32,58 12,42 38,38" stroke="currentColor" strokeWidth="2.5" />
+          <svg className="w-6 h-6 text-white transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
         </motion.button>
       </LuxuryButton>
