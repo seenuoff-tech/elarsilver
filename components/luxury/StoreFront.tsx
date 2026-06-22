@@ -21,7 +21,7 @@ export default function StoreFront() {
             The Experience
           </span>
           <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight uppercase leading-none text-[#0B5E64]">
-            Our Flagship Boutique
+            Elara Silver Shop
           </h2>
           <div className="w-16 h-[2px] bg-[#0B5E64]/20" />
           <p className="text-neutral-600 font-light text-base md:text-lg leading-relaxed">
@@ -38,13 +38,14 @@ export default function StoreFront() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-          className="w-full lg:w-1/2 relative h-[500px] rounded-2xl overflow-hidden shadow-2xl"
+          className="w-full lg:w-1/2 relative rounded-2xl overflow-hidden shadow-2xl"
         >
           <Image
             src="/images/store-front.jpg"
             alt="Elara Silver Store Front"
-            fill
-            className="object-cover object-center"
+            width={1200}
+            height={800}
+            className="w-full h-auto object-cover object-center"
             sizes="(max-width: 1024px) 100vw, 50vw"
           />
         </motion.div>

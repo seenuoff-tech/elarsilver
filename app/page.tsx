@@ -27,13 +27,13 @@ export default function Home() {
       {/* Shop by Category Section */}
       <ShopByCategory />
 
-      {/* Curated For You Section */}
-      <CuratedForYou />
-
       {/* New Arrivals Section */}
       <div className="relative z-10">
         <NewArrivals />
       </div>
+
+      {/* Curated For You Section */}
+      <CuratedForYou />
 
 
       {/* New Luxury Section 4: Luxury Packaging Reveal */}
