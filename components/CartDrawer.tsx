@@ -1,0 +1,239 @@
+'use client';
+
+import React, { useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useCart } from '../context/CartContext';
+import LuxuryButton from './luxury/LuxuryButton';
+
+export default function CartDrawer() {
+  const {
+    isCartOpen,
+    setIsCartOpen,
+    cartItems,
+    addToCartDirect,
+    removeFromCart,
+    clearCart,
+  } = useCart();
+
+  const drawerRef = useRef<HTMLDivElement>(null);
+
+  // Close drawer on pressing Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsCartOpen(false);
+      }
+    };
+    if (isCartOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isCartOpen, setIsCartOpen]);
+
+  // Compute pricing math totals
+  const subtotal = cartItems.reduce((acc, item) => {
+    const numericPrice = parseFloat(item.price.replace(/[^\d]/g, ''));
+    return acc + numericPrice * item.quantity;
+  }, 0);
+
+  const formattedSubtotal = `₹${subtotal.toLocaleString('en-IN')}`;
+
+  const handleCheckout = () => {
+    alert('Proceeding to secure merchant vault. Thank you for shopping with ELARA SILVER.');
+    clearCart();
+    setIsCartOpen(false);
+  };
+
+  return (
+    <AnimatePresence>
+      {isCartOpen && (
+        <>
+          {/* Dark blurred backdrop overlay */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsCartOpen(false)}
+            className="fixed inset-0 bg-[#ffffff]/70 z-40 backdrop-blur-sm"
+          />
+
+          {/* Slide-out Cart Panel */}
+          <motion.div
+            ref={drawerRef}
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'tween', duration: 0.45, ease: [0.25, 1, 0.5, 1] }}
+            className="fixed top-0 right-0 h-full w-full sm:w-[460px] bg-[#ffffff]/95 border-l border-black/10 z-50 backdrop-blur-2xl shadow-2xl flex flex-col justify-between overflow-hidden"
+          >
+            {/* Ambient luxury particle backdrop drift via CSS */}
+            <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(circle_at_center,#ffffff_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none" />
+
+            <div className="flex flex-col h-full justify-between relative z-10">
+              {/* Header */}
+              <div className="p-6 border-b border-black/10 flex items-center justify-between bg-[#ffffff]/40">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-silver-chrome" viewBox="0 0 100 100" fill="none">
+                    <path
+                      d="M50 5L63 38L96 50L63 62L50 95L37 62L4 50L37 38L50 5Z"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                    />
+                  </svg>
+                  <h3 className="text-sm font-semibold tracking-[0.25em] uppercase text-black">
+                    Your Collection
+                  </h3>
+                </div>
+                <LuxuryButton isCTA={false}>
+                  <button
+                    onClick={() => setIsCartOpen(false)}
+                    className="text-black/45 hover:text-black text-[10px] tracking-widest uppercase transition-colors duration-300 flex items-center gap-1.5 cursor-pointer"
+                  >
+                    Close
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </LuxuryButton>
+              </div>
+
+              {/* Items List */}
+              <div className="flex-grow overflow-y-auto p-6 space-y-6 scrollbar-none">
+                {cartItems.length === 0 ? (
+                  <div className="h-full flex flex-col items-center justify-center text-center space-y-4 py-20">
+                    <svg className="w-10 h-10 text-black/20 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <p className="text-xs tracking-widest uppercase text-black/40 font-light">
+                      Your bag is currently empty.
+                    </p>
+                  </div>
+                ) : (
+                  cartItems.map((item, idx) => (
+                    <motion.div
+                      key={`${item.id}-${item.size}`}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: idx * 0.05 }}
+                      className="border border-black/5 bg-neutral-50/40 p-4 flex gap-4 items-center justify-between"
+                    >
+                      {/* Product Representation: Velvet Box Icon */}
+                      <div className="flex items-center gap-4 flex-grow">
+                        <div className="w-16 h-16 bg-neutral-900 border border-black/10 flex flex-col items-center justify-center relative shadow-md">
+                          {/* Inner velvet logo */}
+                          <svg className="w-5 h-5 text-silver-chrome opacity-80" viewBox="0 0 100 100" fill="none">
+                            <path d="M50 5L63 38L96 50L63 62L50 95L37 62L4 50L37 38L50 5Z" stroke="currentColor" strokeWidth="3" />
+                          </svg>
+                          <span className="text-[6px] tracking-widest text-silver-chrome/60 uppercase font-mono mt-1">
+                            ELARA
+                          </span>
+                        </div>
+
+                        {/* Title, Size & Gifting Badge */}
+                        <div className="space-y-1">
+                          <h4 className="text-xs font-semibold tracking-wide uppercase text-black truncate max-w-[200px]">
+                            {item.name}
+                          </h4>
+                          <div className="flex gap-2 text-[9px] text-black/40 font-mono">
+                            <span>Size: {item.size}</span>
+                            <span>|</span>
+                            <span>{item.price}</span>
+                          </div>
+                          
+                          {/* Gifting Box Badge */}
+                          <span className="inline-flex items-center gap-1 text-[8px] tracking-wider uppercase text-silver-chrome font-semibold bg-white/5 border border-black/5 px-2 py-0.5 rounded-none">
+                            <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                            Velvet Gifting Box Included
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Quantity Selector */}
+                      <div className="flex flex-col items-end gap-2 shrink-0">
+                        <span className="text-xs font-bold text-black tracking-wider">
+                          {`₹${(parseFloat(item.price.replace(/[^\d]/g, '')) * item.quantity).toLocaleString('en-IN')}`}
+                        </span>
+
+                        <div className="flex border border-black/10 text-xs select-none">
+                          <LuxuryButton isCTA={false} magneticRange={30} magneticStrength={0.2}>
+                            <button
+                              onClick={() => removeFromCart(item.id, item.size)}
+                              className="px-2 py-1 text-black/50 hover:text-black hover:bg-white/5 transition-colors cursor-pointer font-bold"
+                            >
+                              -
+                            </button>
+                          </LuxuryButton>
+                          <span className="px-3 py-1 text-black font-mono">{item.quantity}</span>
+                          <LuxuryButton isCTA={false} magneticRange={30} magneticStrength={0.2}>
+                            <button
+                              onClick={() => addToCartDirect({ id: item.id, name: item.name, price: item.price }, item.size)}
+                              className="px-2 py-1 text-black/50 hover:text-black hover:bg-white/5 transition-colors cursor-pointer font-bold"
+                            >
+                              +
+                            </button>
+                          </LuxuryButton>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))
+                )}
+              </div>
+
+              {/* Gifting & Glimmering Checkout Footer Summary */}
+              {cartItems.length > 0 && (
+                <div className="p-6 border-t border-black/10 bg-neutral-50/60 backdrop-blur-sm space-y-6">
+                  {/* Detailed pricing summary */}
+                  <div className="space-y-2.5 text-[10px] tracking-widest uppercase text-black/55 font-light">
+                    <div className="flex justify-between">
+                      <span>Subtotal</span>
+                      <span className="text-black font-medium">{formattedSubtotal}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Insured Express Shipping</span>
+                      <span className="text-green-400 font-semibold">Complimentary</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Luxury Gift Packaging</span>
+                      <span className="text-green-400 font-semibold">Complimentary</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Taxes & Duties</span>
+                      <span className="text-black/40">Included</span>
+                    </div>
+                    
+                    <div className="w-full h-[1px] bg-white/10 my-2" />
+                    
+                    <div className="flex justify-between text-xs font-bold text-black tracking-widest pt-2">
+                      <span>Grand Total</span>
+                      <span>{formattedSubtotal}</span>
+                    </div>
+                  </div>
+
+                  {/* Proceed to Checkout CTA */}
+                  <div className="space-y-3">
+                    <LuxuryButton isCTA={true}>
+                      <button
+                        onClick={handleCheckout}
+                        className="w-full py-4 text-xs font-bold tracking-[0.25em] uppercase bg-[#0B5E64] text-white border border-[#0B5E64] hover:opacity-90 transition-all duration-500 hover:shadow-[0_0_20px_rgba(11,94,100,0.45)] cursor-pointer relative overflow-hidden group"
+                      >
+                        {/* Sweep overlay shine effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                        Proceed To Secure Checkout
+                      </button>
+                    </LuxuryButton>
+                    <p className="text-[8px] text-black/30 text-center uppercase tracking-widest font-light">
+                      SSL Insured Checkout. Rhodium Solid Mirror Finish.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
+
