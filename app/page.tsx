@@ -10,6 +10,7 @@ import AtmosphereBackground from '../components/luxury/AtmosphereBackground';
 import NewArrivals from '../components/NewArrivals';
 import Testimonials from '../components/Testimonials';
 import PackagingShowcase from '../components/luxury/PackagingShowcase';
+import CraftsmanshipTimeline from '../components/luxury/CraftsmanshipTimeline';
 import StoreFront from '../components/luxury/StoreFront';
 
 import ConciergeAssistant from '../components/luxury/ConciergeAssistant';
@@ -40,6 +41,10 @@ export default function Home() {
         <PackagingShowcase />
       </div>
 
+      {/* New Luxury Section 5: Craftsmanship Timeline */}
+      <div className="relative z-10">
+        <CraftsmanshipTimeline />
+      </div>
 
 
 
