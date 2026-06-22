@@ -93,7 +93,9 @@ export default function PackagingShowcase() {
                 transition={{ duration: 0.5, delay: idx * 0.15 }}
                 className="flex gap-4 items-start"
               >
-                <div className="w-2.5 h-2.5 rounded-full border border-silver-chrome mt-1.5 shrink-0" />
+                <svg className="w-3.5 h-3.5 text-black/40 mt-1 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0 C12 6.627 6.627 12 0 12 C6.627 12 12 17.373 12 24 C12 17.373 17.373 12 24 12 C17.373 12 12 6.627 12 0 Z" />
+                </svg>
                 <div className="space-y-0.5">
                   <h4 className="text-xs font-semibold uppercase text-black tracking-wider">
                     {item.title}
