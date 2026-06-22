@@ -9,6 +9,7 @@ interface LuxuryButtonProps {
   magneticRange?: number;
   magneticStrength?: number;
   shimmerColor?: 'gold' | 'silver';
+  className?: string;
 }
 
 export default function LuxuryButton({
@@ -17,6 +18,7 @@ export default function LuxuryButton({
   magneticRange = 85,
   magneticStrength = 0.38,
   shimmerColor = 'gold',
+  className = '',
 }: LuxuryButtonProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
@@ -341,7 +343,7 @@ export default function LuxuryButton({
   return (
     <div
       ref={containerRef}
-      className="inline-block relative z-20"
+      className={`inline-block relative z-20 ${className}`}
       style={{ perspective: 1000 }}
     >
       {/* Luxury glow shadow backing */}
