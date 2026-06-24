@@ -37,18 +37,11 @@ export default function ThreeRing({ geometryConfig, isHovered, colorTheme, finis
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
     
-    // Rotate and animate the ring group
+    // Fixed orientation instead of continuous rotation
     if (groupRef.current) {
-      const spinSpeed = isHovered ? 0.025 : 0.006;
-      groupRef.current.rotation.y += spinSpeed;
-      
-      if (isHovered) {
-        groupRef.current.rotation.x = Math.sin(t * 2) * 0.15;
-        groupRef.current.rotation.z = Math.cos(t * 1.5) * 0.08;
-      } else {
-        groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, 0.2, 0.05);
-        groupRef.current.rotation.z = THREE.MathUtils.lerp(groupRef.current.rotation.z, 0, 0.05);
-      }
+      groupRef.current.rotation.x = 0.2;
+      groupRef.current.rotation.y = 0;
+      groupRef.current.rotation.z = 0;
 
       const targetScale = isHovered ? 1.15 : 0.95;
       const currentScale = groupRef.current.scale.x;

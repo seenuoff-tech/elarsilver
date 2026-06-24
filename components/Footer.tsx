@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import LuxuryButton from './luxury/LuxuryButton';
 
 export default function Footer() {
@@ -16,28 +17,28 @@ export default function Footer() {
   };
 
   return (
-    <footer id="contact" className="bg-[#0B5E64] border-t border-white/10 text-white py-20 px-6 md:px-12 relative z-10 overflow-hidden">
+    <footer id="contact" className="bg-[#0B5E64] border-t border-white/10 text-white py-20 px-8 md:px-16 relative z-10 overflow-hidden">
       {/* Decorative subtle gradient background */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
       
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+      <div className="w-full mx-auto grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-12 lg:gap-8">
         {/* Column 1: Brand */}
         <div className="space-y-6">
           <div className="flex items-center gap-3">
             <img 
               src="/images/logo2.PNG" 
               alt="Elara Silver Logo" 
-              className="w-auto h-24 object-contain brightness-0 invert" 
+              className="w-auto h-32 md:h-40 object-contain brightness-0 invert" 
             />
           </div>
           <p className="text-white/80 text-sm leading-relaxed font-light">
             Forging timeless aesthetics in solid sterling silver. Experiencing luxury jewelry through high-end craftsmanship and conscious modern design.
           </p>
           <div className="flex gap-4">
-            {['Instagram', 'Pinterest', 'Facebook'].map((social) => (
+            {['Instagram', 'WhatsApp', 'Facebook'].map((social) => (
               <a
                 key={social}
-                href="#"
+                href={social === 'WhatsApp' ? 'https://wa.me/919876543210' : '#'}
                 className="text-white/60 hover:text-white text-xs tracking-wider uppercase transition-colors duration-300"
               >
                 {social}
@@ -46,15 +47,28 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Column 2: Collections */}
+        {/* Column 2: Categories */}
+        <div className="space-y-6">
+          <h4 className="text-xs font-semibold tracking-[0.25em] uppercase text-white">Categories</h4>
+          <div className="flex flex-col space-y-3 text-sm text-white/80 font-light">
+            <Link href="/shop?category=rings" className="hover:text-white transition-colors duration-300">Rings</Link>
+            <Link href="/shop?category=necklace" className="hover:text-white transition-colors duration-300">Necklace</Link>
+            <Link href="/shop?category=minimalist-chains" className="hover:text-white transition-colors duration-300">Minimalist Chains</Link>
+            <Link href="/shop?category=bracelet" className="hover:text-white transition-colors duration-300">Bracelet</Link>
+            <Link href="/shop?category=earings" className="hover:text-white transition-colors duration-300">Earrings</Link>
+          </div>
+        </div>
+
+        {/* Column 3: Collections (Rest of categories) */}
         <div className="space-y-6">
           <h4 className="text-xs font-semibold tracking-[0.25em] uppercase text-white">Collections</h4>
-          <ul className="space-y-3 text-sm text-white/80 font-light">
-            <li><a href="#collections" className="hover:text-white transition-colors duration-300">Signature Ring</a></li>
-            <li><a href="#" className="hover:text-white transition-colors duration-300">Liquid Silver Necklaces</a></li>
-            <li><a href="#" className="hover:text-white transition-colors duration-300">Sterling Cuffs</a></li>
-            <li><a href="#" className="hover:text-white transition-colors duration-300">Eternal Drop Earrings</a></li>
-          </ul>
+          <div className="flex flex-col space-y-3 text-sm text-white/80 font-light">
+            <Link href="/shop?category=anklets" className="hover:text-white transition-colors duration-300">Anklets</Link>
+            <Link href="/shop?category=chains" className="hover:text-white transition-colors duration-300">Chains</Link>
+            <Link href="/shop?category=toe-rings" className="hover:text-white transition-colors duration-300">Toe Rings</Link>
+            <Link href="/shop?category=mens-rings" className="hover:text-white transition-colors duration-300 font-medium pt-2">Men's Category</Link>
+            <Link href="/shop?category=kids-earings" className="hover:text-white transition-colors duration-300 font-medium">Kids Category</Link>
+          </div>
         </div>
 
         {/* Column 3: Support */}
@@ -63,10 +77,10 @@ export default function Footer() {
           <ul className="space-y-3 text-sm text-white/80 font-light">
             <li><a href="#" className="hover:text-white transition-colors duration-300">Complimentary Shipping</a></li>
             <li><a href="#" className="hover:text-white transition-colors duration-300">Secure Payments</a></li>
-            <li><a href="#" className="hover:text-white transition-colors duration-300">Returns & Exchanges</a></li>
+            <li><Link href="/refund-return-policy" className="hover:text-white transition-colors duration-300">Refund & Return Policy</Link></li>
             <li><a href="#" className="hover:text-white transition-colors duration-300">Jewellery Care Guide</a></li>
-            <li><a href="/contact" className="hover:text-white transition-colors duration-300">Contact Us</a></li>
-            <li><a href="/track-order" className="hover:text-white transition-colors duration-300">Track Your Order</a></li>
+            <li><Link href="/contact" className="hover:text-white transition-colors duration-300">Contact Us</Link></li>
+            <li><Link href="/track-order" className="hover:text-white transition-colors duration-300">Track Your Order</Link></li>
           </ul>
         </div>
 
@@ -103,10 +117,19 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/20 flex flex-col md:flex-row items-center justify-between text-xs text-white/60 font-light gap-4">
-        <p>© {new Date().getFullYear()} ELARA SILVER. All Rights Reserved.</p>
-        <div className="flex gap-6">
-          <a href="https://www.skeneticdigital.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors duration-300">Developed by skenetic digital</a>
+      <div className="w-full mx-auto mt-20 pt-8 border-t border-white/20 flex flex-col items-center gap-6 text-xs text-white/60 font-light">
+        <div className="flex flex-wrap justify-center gap-4 md:gap-8">
+          <Link href="/terms-and-conditions" className="hover:text-white transition-colors duration-300 tracking-wider uppercase">Terms & Conditions</Link>
+          <span className="hidden md:inline text-white/20">|</span>
+          <Link href="/refund-return-policy" className="hover:text-white transition-colors duration-300 tracking-wider uppercase">Refund & Return Policy</Link>
+          <span className="hidden md:inline text-white/20">|</span>
+          <Link href="/privacy-policy" className="hover:text-white transition-colors duration-300 tracking-wider uppercase">Privacy Policy</Link>
+        </div>
+        <div className="flex flex-col md:flex-row items-center justify-between w-full gap-4">
+          <p>© {new Date().getFullYear()} ELARA SILVER. All Rights Reserved.</p>
+          <div className="flex gap-6">
+            <a href="https://www.skeneticdigital.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors duration-300">Developed by skenetic digital</a>
+          </div>
         </div>
       </div>
     </footer>

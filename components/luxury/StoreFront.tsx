@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 
 export default function StoreFront() {
   return (
-    <section className="relative bg-white py-24 px-6 md:px-12 z-10 overflow-hidden">
+    <section className="relative bg-gray-50 py-24 px-6 md:px-12 z-10 overflow-hidden">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
         
         {/* Left Side: Heading & Content */}
@@ -30,6 +30,52 @@ export default function StoreFront() {
           <p className="text-neutral-500 font-light text-sm md:text-base leading-relaxed">
             Discover exclusive in-store collections and enjoy personalized styling consultations with our dedicated artisans.
           </p>
+          
+          {/* Added Features/Content */}
+          <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 rounded-full bg-[#0B5E64]/10 flex items-center justify-center shrink-0">
+                <svg className="w-3.5 h-3.5 text-[#0B5E64]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <span className="text-xs md:text-sm font-medium text-neutral-700 uppercase tracking-wide">Custom Engraving</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 rounded-full bg-[#0B5E64]/10 flex items-center justify-center shrink-0">
+                <svg className="w-3.5 h-3.5 text-[#0B5E64]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <span className="text-xs md:text-sm font-medium text-neutral-700 uppercase tracking-wide">Jewellery Spa</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 rounded-full bg-[#0B5E64]/10 flex items-center justify-center shrink-0">
+                <svg className="w-3.5 h-3.5 text-[#0B5E64]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <span className="text-xs md:text-sm font-medium text-neutral-700 uppercase tracking-wide">Expert Styling</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 rounded-full bg-[#0B5E64]/10 flex items-center justify-center shrink-0">
+                <svg className="w-3.5 h-3.5 text-[#0B5E64]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <span className="text-xs md:text-sm font-medium text-neutral-700 uppercase tracking-wide">In-store Exclusives</span>
+            </div>
+          </div>
+
+          {/* Call to action */}
+          <div className="pt-6 flex items-center gap-4">
+            <button className="px-8 py-3.5 bg-[#0B5E64] text-white text-xs font-bold tracking-[0.2em] uppercase hover:bg-black transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-1">
+              Get Directions
+            </button>
+            <button className="px-8 py-3.5 bg-transparent border border-[#0B5E64] text-[#0B5E64] text-xs font-bold tracking-[0.2em] uppercase hover:bg-[#0B5E64] hover:text-white transition-all duration-300">
+              Book Visit
+            </button>
+          </div>
         </motion.div>
 
         {/* Right Side: Store Front Image */}

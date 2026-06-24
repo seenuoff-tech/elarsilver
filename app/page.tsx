@@ -55,11 +55,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
       <Testimonials />
-
-      {/* Floating Concierge Assistant Widget */}
-      <ConciergeAssistant />
     </div>
   );
 }
