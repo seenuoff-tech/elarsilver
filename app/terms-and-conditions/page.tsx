@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Terms & Conditions | Elara Silver',
-  description: 'Read the Terms and Conditions governing the use of Elara Silver's website, products, and services.',
+  description: "Read the Terms and Conditions governing the use of Elara Silver's website, products, and services.",
 };
 
 const sections = [
