@@ -1,0 +1,6 @@
+export const mensProducts = [
+  { id: 101, name: 'Classic Cuban Chain', image: '/images/men_product_1.png', oldPrice: 7499, newPrice: 5999, rating: 4.8, isBestSeller: true, material: 'Pure 925 Silver', reviewsCount: 120, finishes: [], gallery: [], description: { inspiration: 'A classic Cuban chain for everyday luxury.', design: '' } },
+  { id: 102, name: 'Onyx Signet Ring', image: '/images/men_product_2.png', oldPrice: 4999, newPrice: 3499, rating: 4.9, isBestSeller: false, material: 'Pure 925 Silver', reviewsCount: 85, finishes: [], gallery: [], description: { inspiration: 'A bold signet ring featuring a deep black onyx.', design: '' } },
+  { id: 103, name: 'Heavy Link Bracelet', image: '/images/men_product_3.png', oldPrice: 6999, newPrice: 4999, rating: 4.7, isBestSeller: false, material: 'Pure 925 Silver', reviewsCount: 64, finishes: [], gallery: [], description: { inspiration: 'A heavy, durable link bracelet for men.', design: '' } },
+  { id: 104, name: 'Matte Silver Band', image: '/images/men_product_4.png', oldPrice: 3499, newPrice: 2499, rating: 4.9, isBestSeller: true, material: 'Pure 925 Silver', reviewsCount: 210, finishes: [], gallery: [], description: { inspiration: 'A minimalist matte silver band.', design: '' } }
+];

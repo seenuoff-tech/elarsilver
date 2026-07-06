@@ -11,6 +11,12 @@ import NewArrivals from '../components/NewArrivals';
 import Testimonials from '../components/Testimonials';
 import StoreFront from '../components/luxury/StoreFront';
 import ConciergeAssistant from '../components/luxury/ConciergeAssistant';
+import LuxuryWithinReach from '../components/LuxuryWithinReach';
+import HotRightNowBanner from '../components/HotRightNowBanner';
+import ShopByColour from '../components/ShopByColour';
+import CelebrityBanner from '../components/CelebrityBanner';
+import MensCollection from '../components/MensCollection';
+import FirstAccessBanner from '../components/FirstAccessBanner';
 
 export default function Home() {
   return (
@@ -24,13 +30,31 @@ export default function Home() {
       {/* Shop by Category Section */}
       <ShopByCategory />
 
+      {/* Luxury Within Reach Section */}
+      <LuxuryWithinReach />
+
       {/* New Arrivals Section */}
       <div className="relative z-10">
         <NewArrivals />
       </div>
 
+      {/* Hot Right Now Banner */}
+      <HotRightNowBanner />
+
+      {/* Shop by Colour Section */}
+      <ShopByColour />
+
       {/* Curated For You Section */}
       <CuratedForYou />
+
+      {/* Celebrity Banner */}
+      <CelebrityBanner />
+
+      {/* Men's Collection */}
+      <MensCollection />
+
+      {/* First Access Banner */}
+      <FirstAccessBanner />
 
       {/* Store Front Section */}
       <div className="relative z-10">

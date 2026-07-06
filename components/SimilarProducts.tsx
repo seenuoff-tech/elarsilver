@@ -7,7 +7,11 @@ import { useWishlist } from '../context/WishlistContext';
 import { useProducts } from '../context/ProductsContext';
 import { useCart } from '../context/CartContext';
 
-export default function NewArrivals() {
+interface SimilarProductsProps {
+  currentProductId: number;
+}
+
+export default function SimilarProducts({ currentProductId }: SimilarProductsProps) {
   const { wishlist, toggleWishlist } = useWishlist();
   const { products } = useProducts();
   const { triggerPackagingAnimation } = useCart();
@@ -30,12 +34,15 @@ export default function NewArrivals() {
     );
   };
 
+  // Filter out the current product and grab up to 4 similar items
+  const similarProducts = products.filter(p => Number(p.id) !== currentProductId).slice(0, 4);
+
   return (
-    <section className="py-20 px-6 md:px-12 bg-white max-w-7xl mx-auto z-10 relative border-t border-black/5">
-      <h2 className="text-2xl md:text-3xl font-medium mb-12 text-left text-black">New arrivals</h2>
+    <div className="max-w-7xl mx-auto px-4 md:px-8 mt-24 border-t border-gray-200 pt-16">
+      <h2 className="text-xl text-black mb-8">Recently Viewed</h2>
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {products.map((product) => (
+        {similarProducts.map((product) => (
           <div key={product.id} className="relative flex flex-col group">
             {/* Best Seller Ribbon */}
             {product.isBestSeller && (
@@ -47,7 +54,7 @@ export default function NewArrivals() {
             )}
             
             {/* Image Container */}
-            <Link href={`/product/${product.id}`} className="aspect-square w-full relative bg-white flex items-center justify-center p-4 mb-4 rounded-xl border border-transparent hover:border-black/5 transition-colors block">
+            <Link href={`/product/${product.id}`} className="aspect-square w-full relative bg-[#fafafa] flex items-center justify-center p-4 mb-4 rounded-xl border border-gray-100 hover:border-black/10 transition-colors block">
               <Image 
                 src={product.image} 
                 alt={product.name} 
@@ -63,11 +70,11 @@ export default function NewArrivals() {
                 aria-label="Add to wishlist"
               >
                 {wishlist.includes(product.id) ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-red-500">
-                    <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-[#0B5E64]">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                   </svg>
                 ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-400 hover:text-red-500 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-gray-400 hover:text-[#0B5E64] transition-colors">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                   </svg>
                 )}
@@ -77,25 +84,32 @@ export default function NewArrivals() {
             {/* Details */}
             <div className="flex flex-col flex-grow px-1">
               <div className="flex items-center gap-1 mb-2">
-                <span className="text-sm font-semibold text-gray-800">{product.rating}</span>
-                <span className="text-amber-400 text-sm">★</span>
+                <span className="text-xs font-semibold text-gray-800 bg-white shadow-sm border border-black/5 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  {product.rating} <span className="text-amber-400 text-[10px]">★</span> | {product.reviewsCount}
+                </span>
               </div>
               
-              <div className="flex items-center gap-2 mb-5">
-                <span className="text-xs text-gray-400 line-through font-light">₹ {product.oldPrice}</span>
-                <span className="text-sm font-bold text-black">₹ {product.newPrice}</span>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-sm font-bold text-black">₹{product.newPrice}</span>
+                <span className="text-xs text-gray-400 line-through font-light">₹{product.oldPrice}</span>
               </div>
+              
+              <p className="text-xs text-gray-600 truncate mb-1">{product.name}</p>
+              
+              {product.oldPrice > product.newPrice && (
+                <p className="text-[10px] font-bold text-[#0B5E64] mb-3">PRICE DROP!</p>
+              )}
               
               <button 
                 onClick={(e) => handleAddToCart(product, e)}
-                className="w-full mt-auto py-2.5 bg-[#0B5E64] text-white text-xs font-semibold tracking-wide uppercase rounded-md hover:bg-black transition-colors duration-300 shadow-sm"
+                className="w-full mt-auto py-2.5 bg-[#0B5E64] text-white text-xs font-semibold rounded-md hover:bg-[#08494E] transition-colors duration-300"
               >
-                Add to cart
+                Add to Cart
               </button>
             </div>
           </div>
         ))}
       </div>
-    </section>
+    </div>
   );
 }

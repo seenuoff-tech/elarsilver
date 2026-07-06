@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
 import LuxuryButton from './luxury/LuxuryButton';
 import SearchOverlay from './luxury/SearchOverlay';
@@ -18,13 +19,15 @@ export default function Navbar() {
   const [sidebarQuery, setSidebarQuery] = useState('');
   const sidebarInputRef = useRef<HTMLInputElement>(null);
   const { cartCount, setIsCartOpen, isCartOpen } = useCart();
+  const { wishlistCount } = useWishlist();
   const { user, logout } = useAuth();
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [desktopExpandedCategory, setDesktopExpandedCategory] = useState<string | null>(null);
+  const [activeMaterial, setActiveMaterial] = useState('Silver');
 
   const navigationMenu = [
     {
-      name: 'Category',
+      name: 'Women category',
       items: [
         { name: 'Rings', href: '/shop?category=rings' },
         { name: 'Necklace', href: '/shop?category=necklace' },
@@ -34,7 +37,6 @@ export default function Navbar() {
         { name: 'Anklets', href: '/shop?category=anklets' },
         { name: 'Chains', href: '/shop?category=chains' },
         { name: 'Toe rings', href: '/shop?category=toe-rings' },
-        { name: 'Kids', href: '/shop?category=kids' },
       ]
     },
     {
@@ -106,7 +108,7 @@ export default function Navbar() {
           : 'bg-white border-transparent'
       }`}
     >
-      <div className="w-full max-w-7xl mx-auto px-6 md:px-12 flex flex-col">
+      <div className="w-full max-w-full px-4 md:px-6 flex flex-col">
         {/* Top Row: Hamburger, Logo, Icons */}
         <div className="flex items-center justify-between h-20 md:h-24">
           {/* Left: Hamburger (Always Visible based on image) */}
@@ -124,11 +126,11 @@ export default function Navbar() {
 
           {/* Center: Logo */}
           <div className="flex justify-center items-center w-1/3">
-            <Link href="/" className="hover:scale-105 transition-transform duration-500">
+            <Link href="/" className="hover:scale-105 transition-transform duration-500 flex items-center justify-center">
               <img 
-                src="/images/elaralogo.png" 
+                src="/images/Logoorg.PNG" 
                 alt="Elara Silver Logo" 
-                className="h-16 object-contain" 
+                className="h-16 md:h-24 object-contain py-1 drop-shadow-sm" 
               />
             </Link>
           </div>
@@ -143,10 +145,15 @@ export default function Navbar() {
             </button>
 
             {/* Wishlist (Solid Red Heart) */}
-            <Link href="/wishlist" className="hover:opacity-80 transition-opacity" title="Wishlist">
-              <svg className="w-6 h-6 text-[#8B1A24]" fill="currentColor" viewBox="0 0 24 24">
+            <Link href="/wishlist" className="relative hover:opacity-80 transition-opacity" title="Wishlist">
+              <svg className="w-6 h-6 text-[#0B5E64]" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
               </svg>
+              {wishlistCount > 0 && (
+                <span className="absolute -top-2 -right-2 w-4 h-4 bg-[#0B5E64] text-white text-[10px] font-bold flex items-center justify-center rounded-full">
+                  {wishlistCount}
+                </span>
+              )}
             </Link>
 
             {/* Cart (Solid Cart) */}
@@ -155,7 +162,7 @@ export default function Navbar() {
                 <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0020 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
               </svg>
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 w-4 h-4 bg-[#8B1A24] text-white text-[10px] font-bold flex items-center justify-center rounded-full">
+                <span className="absolute -top-2 -right-2 w-4 h-4 bg-[#0B5E64] text-white text-[10px] font-bold flex items-center justify-center rounded-full">
                   {cartCount}
                 </span>
               )}
@@ -213,10 +220,26 @@ export default function Navbar() {
 
         {/* Bottom Row: Links — hidden on mobile, visible md+ */}
         <div 
-          className={`hidden md:flex justify-center items-center transition-all duration-500 ease-in-out ${
-            showLinks ? 'max-h-20 opacity-100 pb-4 overflow-visible' : 'max-h-0 opacity-0 pb-0 overflow-hidden'
+          className={`hidden md:flex flex-col justify-center items-center transition-all duration-500 ease-in-out ${
+            showLinks ? 'max-h-40 opacity-100 pb-4 overflow-visible' : 'max-h-0 opacity-0 pb-0 overflow-hidden'
           }`}
         >
+          {/* Material Toggle */}
+          <div className="flex items-center border border-[#D4AF37] rounded-full p-1 mb-6 mt-2">
+            <button
+              onClick={() => setActiveMaterial('Silver')}
+              className={`px-8 py-2 text-sm font-medium rounded-full transition-colors ${activeMaterial === 'Silver' ? 'bg-[#0B5E64] text-white shadow-sm' : 'bg-transparent text-gray-600 hover:text-black'}`}
+            >
+              Silver Jewellery
+            </button>
+            <button
+              onClick={() => setActiveMaterial('Sleet')}
+              className={`px-8 py-2 text-sm font-medium rounded-full transition-colors ${activeMaterial === 'Sleet' ? 'bg-[#0B5E64] text-white shadow-sm' : 'bg-transparent text-gray-600 hover:text-black'}`}
+            >
+              Sleet Jewellery
+            </button>
+          </div>
+
           <div className="flex items-center gap-8 md:gap-12 text-[13px] font-medium text-gray-800 tracking-widest uppercase relative">
             {navigationMenu.map((nav) => (
               <div key={nav.name} className="relative py-4 desktop-dropdown">

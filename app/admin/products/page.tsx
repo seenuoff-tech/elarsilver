@@ -3,17 +3,11 @@
 import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { usePricing } from '@/components/PricingProvider';
+import { useProducts, AppProduct } from '@/context/ProductsContext';
 
 export default function ProductsManagement() {
   const { calculatePrice } = usePricing();
-
-  const [products, setProducts] = useState([
-    { id: 'PRD-001', name: 'Signature Silver Ring', category: 'Rings', weightInGrams: 5, stock: 24, status: 'Active' },
-    { id: 'PRD-002', name: 'Liquid Silver Necklace', category: 'Necklace', weightInGrams: 18, stock: 8, status: 'Active' },
-    { id: 'PRD-003', name: 'Minimalist Cuff Bracelet', category: 'Bracelet', weightInGrams: 12, stock: 0, status: 'Out of Stock' },
-    { id: 'PRD-004', name: 'Eternal Drop Earrings', category: 'Earrings', weightInGrams: 8, stock: 45, status: 'Active' },
-    { id: 'PRD-005', name: 'Men\'s Classic Chain', category: 'Chains', weightInGrams: 25, stock: 12, status: 'Draft' },
-  ]);
+  const { products, setProducts, updateProduct } = useProducts();
 
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
@@ -28,29 +22,30 @@ export default function ProductsManagement() {
     if (selectedProducts.length === products.length) {
       setSelectedProducts([]);
     } else {
-      setSelectedProducts(products.map(p => p.id));
+      setSelectedProducts(products.map(p => String(p.id)));
     }
   };
 
-  const toggleSelect = (id: string) => {
-    if (selectedProducts.includes(id)) {
-      setSelectedProducts(selectedProducts.filter(pId => pId !== id));
+  const toggleSelect = (id: string | number) => {
+    const stringId = String(id);
+    if (selectedProducts.includes(stringId)) {
+      setSelectedProducts(selectedProducts.filter(pId => pId !== stringId));
     } else {
-      setSelectedProducts([...selectedProducts, id]);
+      setSelectedProducts([...selectedProducts, stringId]);
     }
   };
 
   const handleBulkDelete = () => {
     if (confirm(`Are you sure you want to move ${selectedProducts.length} products to trash?`)) {
-      setProducts(products.filter(p => !selectedProducts.includes(p.id)));
+      setProducts(products.filter(p => !selectedProducts.includes(String(p.id))));
       setSelectedProducts([]);
       alert('Products moved to trash successfully.');
     }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: string | number) => {
     if (confirm('Are you sure you want to move this product to trash?')) {
-      setProducts(products.filter(p => p.id !== id));
+      setProducts(products.filter(p => String(p.id) !== String(id)));
     }
   };
 
@@ -58,11 +53,11 @@ export default function ProductsManagement() {
     if (editingProduct) {
       if (editingProduct.id === '') {
         // Add new
-        const newProduct = { ...editingProduct, id: `PRD-${Math.random().toString(36).substr(2, 5)}`.toUpperCase() };
+        const newProduct = { ...editingProduct, id: Math.floor(Math.random() * 1000).toString() };
         setProducts([...products, newProduct]);
       } else {
         // Update existing
-        setProducts(products.map(p => p.id === editingProduct.id ? editingProduct : p));
+        updateProduct(editingProduct.id, editingProduct);
       }
       setEditingProduct(null);
     }
@@ -83,7 +78,7 @@ export default function ProductsManagement() {
             Bulk Upload
           </button>
           <button 
-            onClick={() => setEditingProduct({ id: '', name: '', category: 'Rings', weightInGrams: 0, stock: 0, status: 'Active' })}
+            onClick={() => setEditingProduct({ id: '', name: '', category: 'Rings', weightInGrams: 0, stock: 0, status: 'Active', isBestSeller: false, description: { inspiration: '', design: '' } })}
             className="px-4 py-2 bg-[#0B5E64] text-white text-sm font-medium rounded-lg hover:bg-[#084A4F] transition-colors"
           >
             Add Product
@@ -151,11 +146,11 @@ export default function ProductsManagement() {
             </thead>
             <tbody>
               {products.map((product) => (
-                <tr key={product.id} className={`border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors ${selectedProducts.includes(product.id) ? 'bg-gray-50/50' : ''}`}>
+                <tr key={product.id} className={`border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors ${selectedProducts.includes(String(product.id)) ? 'bg-gray-50/50' : ''}`}>
                   <td className="p-4">
                     <input 
                       type="checkbox" 
-                      checked={selectedProducts.includes(product.id)}
+                      checked={selectedProducts.includes(String(product.id))}
                       onChange={() => toggleSelect(product.id)}
                       className="w-4 h-4 text-[#0B5E64] bg-gray-100 border-gray-300 rounded focus:ring-[#0B5E64]"
                     />
@@ -409,6 +404,37 @@ export default function ProductsManagement() {
                     <option>Draft</option>
                     <option>Out of Stock</option>
                   </select>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="checkbox"
+                      checked={editingProduct ? editingProduct.isBestSeller : false}
+                      onChange={(e) => editingProduct && setEditingProduct({...editingProduct, isBestSeller: e.target.checked})}
+                      className="w-4 h-4 text-[#0B5E64] rounded border-gray-300 focus:ring-[#0B5E64]"
+                    />
+                    <span className="text-sm font-medium text-gray-700">Mark as Best Seller</span>
+                  </label>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Inspiration (Description Preview)</label>
+                  <textarea 
+                    value={editingProduct?.description?.inspiration || ''}
+                    onChange={(e) => editingProduct && setEditingProduct({...editingProduct, description: { ...editingProduct.description, inspiration: e.target.value }})}
+                    rows={3}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none"
+                    placeholder="Brief preview of the inspiration..."
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">The Design (Full Description)</label>
+                  <textarea 
+                    value={editingProduct?.description?.design || ''}
+                    onChange={(e) => editingProduct && setEditingProduct({...editingProduct, description: { ...editingProduct.description, design: e.target.value }})}
+                    rows={3}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none"
+                    placeholder="Detailed description of the design..."
+                  />
                 </div>
               </div>
             </div>

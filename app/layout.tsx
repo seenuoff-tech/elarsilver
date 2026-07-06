@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
 import './globals.css';
 import { CartProvider } from '../context/CartContext';
+import { WishlistProvider } from '../context/WishlistContext';
 import ClientLayout from '../components/ClientLayout';
 
 const outfit = Outfit({
@@ -23,6 +24,8 @@ export const metadata: Metadata = {
 
 import { AuthProvider } from '../context/AuthContext';
 
+import { ProductsProvider } from '../context/ProductsContext';
+
 export default function RootLayout({
   children,
 }: {
@@ -32,9 +35,13 @@ export default function RootLayout({
     <html lang="en" className={`${outfit.variable} light`} suppressHydrationWarning>
       <body className={`${outfit.className} bg-[#ffffff] text-black overflow-x-hidden antialiased`} suppressHydrationWarning>
         <AuthProvider>
-          <CartProvider>
-            <ClientLayout>{children}</ClientLayout>
-          </CartProvider>
+          <ProductsProvider>
+            <WishlistProvider>
+              <CartProvider>
+                <ClientLayout>{children}</ClientLayout>
+              </CartProvider>
+            </WishlistProvider>
+          </ProductsProvider>
         </AuthProvider>
       </body>
     </html>

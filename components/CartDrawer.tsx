@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import LuxuryButton from './luxury/LuxuryButton';
@@ -32,16 +33,19 @@ export default function CartDrawer() {
 
   // Compute pricing math totals
   const subtotal = cartItems.reduce((acc, item) => {
-    const numericPrice = parseFloat(item.price.replace(/[^\d]/g, ''));
+    const numericPrice = parseFloat(String(item.price).replace(/[^\d]/g, ''));
     return acc + numericPrice * item.quantity;
   }, 0);
 
   const formattedSubtotal = `₹${subtotal.toLocaleString('en-IN')}`;
+  const grandTotal = subtotal > 0 ? subtotal + 70 : 0;
+  const formattedGrandTotal = `₹${grandTotal.toLocaleString('en-IN')}`;
+  
+  const router = useRouter();
 
   const handleCheckout = () => {
-    alert('Proceeding to secure merchant vault. Thank you for shopping with ELARA SILVER.');
-    clearCart();
     setIsCartOpen(false);
+    router.push('/checkout');
   };
 
   return (
@@ -117,16 +121,17 @@ export default function CartDrawer() {
                       transition={{ duration: 0.3, delay: idx * 0.05 }}
                       className="border border-black/5 bg-neutral-50/40 p-4 flex gap-4 items-center justify-between"
                     >
-                      {/* Product Representation: Velvet Box Icon */}
+                      {/* Product Image */}
                       <div className="flex items-center gap-4 flex-grow">
-                        <div className="w-16 h-16 bg-neutral-900 border border-black/10 flex flex-col items-center justify-center relative shadow-md">
-                          {/* Inner velvet logo */}
-                          <svg className="w-5 h-5 text-silver-chrome opacity-80" viewBox="0 0 100 100" fill="none">
-                            <path d="M50 5L63 38L96 50L63 62L50 95L37 62L4 50L37 38L50 5Z" stroke="currentColor" strokeWidth="3" />
-                          </svg>
-                          <span className="text-[6px] tracking-widest text-silver-chrome/60 uppercase font-mono mt-1">
-                            ELARA
-                          </span>
+                        <div className="w-16 h-16 bg-white border border-black/10 flex items-center justify-center relative shadow-sm shrink-0">
+                          <img 
+                            src={item.image || `/images/${item.id}.png`} 
+                            alt={item.name} 
+                            className="w-full h-full object-contain p-1" 
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = '/images/hero1.png';
+                            }}
+                          />
                         </div>
 
                         {/* Title, Size & Gifting Badge */}
@@ -153,7 +158,7 @@ export default function CartDrawer() {
                       {/* Quantity Selector */}
                       <div className="flex flex-col items-end gap-2 shrink-0">
                         <span className="text-xs font-bold text-black tracking-wider">
-                          {`₹${(parseFloat(item.price.replace(/[^\d]/g, '')) * item.quantity).toLocaleString('en-IN')}`}
+                          {`₹${(parseFloat(String(item.price).replace(/[^\d]/g, '')) * item.quantity).toLocaleString('en-IN')}`}
                         </span>
 
                         <div className="flex border border-black/10 text-xs select-none">
@@ -168,7 +173,7 @@ export default function CartDrawer() {
                           <span className="px-3 py-1 text-black font-mono">{item.quantity}</span>
                           <LuxuryButton isCTA={false} magneticRange={30} magneticStrength={0.2}>
                             <button
-                              onClick={() => addToCartDirect({ id: item.id, name: item.name, price: item.price }, item.size)}
+                              onClick={() => addToCartDirect({ id: item.id, name: item.name, price: item.price, image: item.image }, item.size)}
                               className="px-2 py-1 text-black/50 hover:text-black hover:bg-white/5 transition-colors cursor-pointer font-bold"
                             >
                               +
@@ -191,32 +196,24 @@ export default function CartDrawer() {
                       <span className="text-black font-medium">{formattedSubtotal}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Insured Express Shipping</span>
-                      <span className="text-green-400 font-semibold">Complimentary</span>
-                    </div>
-                    <div className="flex justify-between">
                       <span>Luxury Gift Packaging</span>
-                      <span className="text-green-400 font-semibold">Complimentary</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Taxes & Duties</span>
-                      <span className="text-black/40">Included</span>
+                      <span className="text-black font-medium">₹70</span>
                     </div>
                     
-                    <div className="w-full h-[1px] bg-white/10 my-2" />
+                    <div className="w-full h-[1px] bg-black/10 my-2" />
                     
                     <div className="flex justify-between text-xs font-bold text-black tracking-widest pt-2">
                       <span>Grand Total</span>
-                      <span>{formattedSubtotal}</span>
+                      <span>{formattedGrandTotal}</span>
                     </div>
                   </div>
 
                   {/* Proceed to Checkout CTA */}
                   <div className="space-y-3">
-                    <LuxuryButton isCTA={true}>
+                    <LuxuryButton isCTA={true} className="w-full">
                       <button
                         onClick={handleCheckout}
-                        className="w-full py-4 text-xs font-bold tracking-[0.25em] uppercase bg-[#0B5E64] text-white border border-[#0B5E64] hover:opacity-90 transition-all duration-500 hover:shadow-[0_0_20px_rgba(11,94,100,0.45)] cursor-pointer relative overflow-hidden group"
+                        className="w-full py-5 px-6 text-xs font-bold tracking-[0.25em] uppercase bg-[#0B5E64] text-white border border-[#0B5E64] hover:opacity-90 transition-all duration-500 hover:shadow-[0_0_20px_rgba(11,94,100,0.45)] cursor-pointer relative overflow-hidden group rounded-md"
                       >
                         {/* Sweep overlay shine effect */}
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />

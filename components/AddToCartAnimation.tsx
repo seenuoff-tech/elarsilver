@@ -67,24 +67,24 @@ export default function AddToCartAnimation() {
 
     const timer2 = setTimeout(() => {
       setStep(2); // Step 2: Box slides in and opens
-    }, 1200);
+    }, 1000);
 
     const timer3 = setTimeout(() => {
       setStep(3); // Step 3: Ring floats into box
-    }, 2400);
+    }, 2000);
 
     const timer4 = setTimeout(() => {
       setStep(4); // Step 4: Box closes, ribbon wraps, tag appears
       playChime(); // Play the synthesized chime sound effect
-    }, 3800);
+    }, 2800);
 
     const timer5 = setTimeout(() => {
       setStep(5); // Step 5: Box shrinks and flies to navbar cart
-    }, 4800);
+    }, 4200);
 
     const timerEnd = setTimeout(() => {
       confirmAddToCart(); // Animation finished, add item
-    }, 5500);
+    }, 5000);
 
     return () => {
       clearTimeout(timer2);
@@ -122,28 +122,29 @@ export default function AddToCartAnimation() {
       >
         {/* STEP 1 & 2 & 3: Floating Interactive Ring */}
         <AnimatePresence>
-          {step <= 3 && (
+          {step <= 5 && (
             <motion.div
-              initial={{ y: 20, opacity: 0, scale: 0.8 }}
+              initial={{ y: 20, opacity: 0, scale: 0.8, rotateX: 0 }}
               animate={
                 step === 1
-                  ? { y: -60, opacity: 1, scale: 1.5 }
+                  ? { y: -60, opacity: 1, scale: 1.5, rotateX: 0 }
                   : step === 2
-                  ? { y: -70, opacity: 1, scale: 1.4 }
-                  : { y: 20, opacity: 1, scale: 0.85 }
+                  ? { y: -70, opacity: 1, scale: 1.4, rotateX: 0 }
+                  : step === 3
+                  ? { y: 20, opacity: 1, scale: 0.85, rotateX: 90 }
+                  : { y: 20, opacity: 0, scale: 0.85, rotateX: 90 }
               }
               exit={{ opacity: 0, scale: 0.5 }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
               className="w-48 h-48 z-30 relative select-none pointer-events-none"
             >
               <div className="absolute inset-0 bg-radial from-white/15 to-transparent blur-xl rounded-full" />
-              <Canvas camera={{ position: [0, 0, 3.8], fov: 45 }} className="w-full h-full">
-                <ThreeRing
-                  geometryConfig={product.ringGeometry}
-                  isHovered={true}
-                  colorTheme={product.colorTheme}
-                />
-              </Canvas>
+              
+              <img 
+                src="/images/hero1.png" 
+                alt="Ring" 
+                className="w-full h-full object-contain p-2 drop-shadow-2xl" 
+              />
             </motion.div>
           )}
         </AnimatePresence>
@@ -183,7 +184,7 @@ export default function AddToCartAnimation() {
               className="w-56 h-56 relative flex items-center justify-center z-20"
             >
               {/* Box Base */}
-              <div className="absolute bottom-6 w-44 h-24 bg-neutral-900 border border-black/10 shadow-2xl flex items-center justify-center flex-col overflow-hidden">
+              <div className="absolute bottom-6 w-44 h-24 bg-[#0B5E64] border border-black/10 shadow-2xl flex items-center justify-center flex-col overflow-hidden">
                 <div className="absolute inset-0 border border-black/5 m-1 pointer-events-none" />
                 
                 {/* Velvet cushion base */}
@@ -201,7 +202,7 @@ export default function AddToCartAnimation() {
                     : { y: -8, rotateX: 0, zIndex: 40 }
                 }
                 transition={{ duration: 0.7, ease: 'easeInOut' }}
-                className="absolute top-10 w-44 h-16 bg-neutral-900 border border-black/15 shadow-[0_15px_30px_rgba(0,0,0,0.6)] flex items-center justify-center"
+                className="absolute top-10 w-44 h-16 bg-[#0B5E64] border border-black/15 shadow-[0_15px_30px_rgba(0,0,0,0.6)] flex items-center justify-center"
               >
                 <div className="absolute inset-0 border border-black/5 m-1 pointer-events-none" />
                 <div className="flex flex-col items-center gap-1 opacity-85">

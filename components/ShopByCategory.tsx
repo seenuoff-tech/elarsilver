@@ -1,36 +1,34 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 const categories = [
-  { name: 'Rings', href: '/shop?category=rings', image: '/images/cat_rings.png' },
-  { name: 'Necklaces', href: '/shop?category=necklaces', image: '/images/cat_necklaces.png' },
-  { name: 'Earrings', href: '/shop?category=earrings', image: '/images/cat_earrings.png' },
   { name: 'Bracelets', href: '/shop?category=bracelets', image: '/images/silver_bracelet.png' },
   { name: 'Pendants', href: '/shop?category=pendants', image: '/images/silver_necklace.png' },
-  { name: 'Gifts', href: '/shop?category=gifts', image: '/images/silver_rings.png' },
-  { name: 'New Arrivals', href: '/shop?category=new-arrivals', image: '/images/cat_earrings.png' },
+  { name: 'Earrings', href: '/shop?category=earrings', image: '/images/cat_earrings.png' },
+  { name: 'Men In Silver', href: '/shop?category=men', image: '/images/silver_rings.png' },
+  { name: 'Sets', href: '/shop?category=sets', image: '/images/cat_necklaces.png' },
+  { name: 'Anklets', href: '/shop?category=anklets', image: '/images/cat_rings.png' },
+  { name: 'Silver Chains', href: '/shop?category=chains', image: '/images/silver_necklace.png' },
+  { name: 'Mangalsutras', href: '/shop?category=mangalsutras', image: '/images/cat_necklaces.png' },
 ];
 
 export default function ShopByCategory() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(3);
 
-  // Handle responsive items per page
   useEffect(() => {
     const updateItemsPerPage = () => {
-      setItemsPerPage(window.innerWidth >= 768 ? 3 : 1);
+      setItemsPerPage(window.innerWidth >= 768 ? 6 : 3);
     };
     updateItemsPerPage();
     window.addEventListener('resize', updateItemsPerPage);
     return () => window.removeEventListener('resize', updateItemsPerPage);
   }, []);
 
-  // Track active slide on scroll
   const handleScroll = () => {
     if (scrollContainerRef.current) {
       const container = scrollContainerRef.current;
@@ -41,137 +39,116 @@ export default function ShopByCategory() {
     }
   };
 
-  // Auto-scroll logic
-  useEffect(() => {
-    if (!scrollContainerRef.current) return;
-    
-    let intervalId: NodeJS.Timeout;
-
-    const startAutoScroll = () => {
-      intervalId = setInterval(() => {
-        if (!isHovered && scrollContainerRef.current) {
-          const container = scrollContainerRef.current;
-          const itemWidth = container.clientWidth / itemsPerPage;
-          
-          // Max scrollable width
-          if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
-            // Reached the end, scroll back to start
-            container.scrollTo({ left: 0, behavior: 'smooth' });
-          } else {
-            // Scroll to next item
-            container.scrollBy({ left: itemWidth, behavior: 'smooth' });
-          }
-        }
-      }, 3000);
-    };
-
-    startAutoScroll();
-
-    return () => clearInterval(intervalId);
-  }, [isHovered, itemsPerPage]);
+  const maxIndex = Math.max(0, categories.length - itemsPerPage);
 
   const scrollTo = (index: number) => {
     if (scrollContainerRef.current) {
       const container = scrollContainerRef.current;
       const itemWidth = container.clientWidth / itemsPerPage;
-      container.scrollTo({
-        left: itemWidth * index,
-        behavior: 'smooth'
-      });
+      container.scrollTo({ left: itemWidth * index, behavior: 'smooth' });
     }
   };
 
-  // Calculate how many pagination stars we need.
-  // If we have 7 items and show 3 per page, the max index where the 3 items can show is 7 - 3 = 4.
-  // So we need 5 dots (indices 0 to 4).
-  const maxIndex = Math.max(0, categories.length - itemsPerPage);
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+    }
+  };
 
   return (
-    <section className="relative py-24 px-6 md:px-12 bg-[#ffffff] z-10 border-b border-black/5">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col items-center text-center mb-12 gap-6">
-          <div className="space-y-4">
-            <span className="text-xs md:text-sm font-semibold tracking-[0.4em] text-silver-chrome uppercase block">
-              Curated Collections
-            </span>
-            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight uppercase text-black">
-              Shop by Category
-            </h2>
-            <div className="w-24 h-[1px] bg-black/10 mx-auto mt-6" />
-          </div>
+    <section className="py-20 px-6 md:px-12 bg-white max-w-7xl mx-auto z-10 relative">
+      <div className="flex flex-col items-center text-center mb-12 gap-6">
+        <div className="space-y-4">
+          <span className="text-xs md:text-sm font-semibold tracking-[0.4em] text-silver-chrome uppercase block">
+            Curated Collections
+          </span>
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight uppercase text-black">
+            Shop by Category
+          </h2>
+          <div className="w-24 h-[1px] bg-black/10 mx-auto mt-6" />
         </div>
+      </div>
 
-        {/* Carousel Container */}
-        <div 
-          className="relative -mx-6 px-6 md:mx-0 md:px-0"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          onTouchStart={() => setIsHovered(true)}
-          onTouchEnd={() => {
-            setTimeout(() => setIsHovered(false), 2000);
-          }}
+      <div className="relative group max-w-6xl mx-auto">
+        
+        {/* Left Arrow */}
+        <button 
+          onClick={scrollLeft}
+          className="absolute left-0 top-[40%] -translate-y-1/2 -translate-x-4 md:-translate-x-12 z-10 w-8 h-8 md:w-10 md:h-10 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-full flex items-center justify-center shadow-sm text-gray-600 transition-colors hidden md:flex"
         >
-          <div 
-            ref={scrollContainerRef}
-            onScroll={handleScroll}
-            className="flex gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-8"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            {categories.map((category, index) => (
-              <div 
-                key={index}
-                className="min-w-[85vw] md:min-w-[calc(33.3333%-16px)] snap-start shrink-0"
-              >
-                <Link
-                  href={category.href}
-                  className="group block relative overflow-hidden rounded-2xl aspect-[4/5] bg-black/5"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500 z-10" />
-                  
-                  <div className="absolute inset-0 z-0">
-                    <Image
-                      src={category.image}
-                      alt={category.name}
-                      fill
-                      className="object-cover object-center transform group-hover:scale-110 transition-transform duration-700 ease-out"
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                    />
-                  </div>
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
 
-                  <div className="absolute inset-0 z-20 flex flex-col items-center justify-end pb-10 px-6">
-                    <h3 className="text-xl md:text-2xl font-bold tracking-wider uppercase text-white mb-3 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                      {category.name}
-                    </h3>
-                    <span className="text-xs font-medium tracking-widest text-white/70 uppercase border-b border-white/30 pb-1 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 delay-100">
-                      Explore →
-                    </span>
-                  </div>
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* Right Arrow */}
+        <button 
+          onClick={scrollRight}
+          className="absolute right-0 top-[40%] -translate-y-1/2 translate-x-4 md:translate-x-12 z-10 w-8 h-8 md:w-10 md:h-10 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-full flex items-center justify-center shadow-sm text-gray-600 transition-colors hidden md:flex"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
 
-        {/* Pagination Stars */}
-        <div className="flex items-center justify-center gap-3 mt-4">
-          {Array.from({ length: maxIndex + 1 }).map((_, index) => (
-            <button
+        {/* Scroll Container */}
+        <div 
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="grid grid-cols-4 gap-x-2 gap-y-6 md:flex md:gap-10 md:overflow-x-auto scrollbar-hide md:snap-x md:snap-mandatory pb-4 pt-2 px-1"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {categories.map((category, index) => (
+            <Link 
               key={index}
-              onClick={() => scrollTo(index)}
-              aria-label={`Go to slide ${index + 1}`}
-              className="p-1 transition-all duration-300 focus:outline-none"
+              href={category.href}
+              className="flex flex-col items-center gap-2 md:gap-4 md:snap-start shrink-0 group/item w-full md:w-auto"
             >
-              <svg 
-                className={`w-4 h-4 transition-colors duration-500 ${activeIndex === index ? 'text-black' : 'text-black/20'}`} 
-                viewBox="0 0 24 24" 
-                fill="currentColor"
-              >
-                {/* Curved Sparkle / Diamond shape */}
-                <path d="M12 0 C12 6.627 6.627 12 0 12 C6.627 12 12 17.373 12 24 C12 17.373 17.373 12 24 12 C17.373 12 12 6.627 12 0 Z" />
-              </svg>
-            </button>
+              {/* Image Container (Squircle) */}
+              <div className="w-full aspect-square md:w-[130px] md:h-[130px] rounded-[1.2rem] md:rounded-[2rem] border-[1.5px] border-[#fce4e9] bg-[#f9f3f4] overflow-hidden relative shadow-sm group-hover/item:shadow-md transition-all">
+                <Image
+                  src={category.image}
+                  alt={category.name}
+                  fill
+                  className="object-cover object-center group-hover/item:scale-105 transition-transform duration-500"
+                  sizes="130px"
+                />
+              </div>
+              
+              {/* Category Name */}
+              <span className="text-[10px] sm:text-xs md:text-sm text-gray-800 font-medium tracking-wide text-center leading-tight">
+                {category.name}
+              </span>
+            </Link>
           ))}
         </div>
+      </div>
+
+      {/* Pagination Stars */}
+      <div className="hidden md:flex items-center justify-center gap-3 mt-8">
+        {Array.from({ length: maxIndex + 1 }).map((_, index) => (
+          <button
+            key={index}
+            onClick={() => scrollTo(index)}
+            aria-label={`Go to slide ${index + 1}`}
+            className="p-1 transition-all duration-300 focus:outline-none"
+          >
+            <svg 
+              className={`w-4 h-4 transition-colors duration-500 ${activeIndex === index ? 'text-[#0B5E64]' : 'text-gray-300'}`} 
+              viewBox="0 0 24 24" 
+              fill="currentColor"
+            >
+              {/* Curved Sparkle / Diamond shape */}
+              <path d="M12 0 C12 6.627 6.627 12 0 12 C6.627 12 12 17.373 12 24 C12 17.373 17.373 12 24 12 C17.373 12 12 6.627 12 0 Z" />
+            </svg>
+          </button>
+        ))}
       </div>
       
       <style dangerouslySetInnerHTML={{__html: `

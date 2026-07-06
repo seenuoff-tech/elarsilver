@@ -1,0 +1,273 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
+import { useProducts } from '../../../context/ProductsContext';
+import { useWishlist } from '../../../context/WishlistContext';
+import { useCart } from '../../../context/CartContext';
+import SimilarProducts from '../../../components/SimilarProducts';
+
+export default function ProductClient() {
+  const { id } = useParams();
+  const router = useRouter();
+  const { products } = useProducts();
+  const product = products.find(p => String(p.id) === String(id));
+  const { wishlist, toggleWishlist } = useWishlist();
+  const { triggerPackagingAnimation } = useCart();
+  
+  const [selectedFinish, setSelectedFinish] = useState(0);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [pincode, setPincode] = useState('');
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [isGift, setIsGift] = useState(false);
+
+  if (!product) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-24">
+        <h1 className="text-2xl">Product not found</h1>
+        <button onClick={() => router.push('/')} className="ml-4 underline">Go Home</button>
+      </div>
+    );
+  }
+
+  // Fallbacks for data structures that might not be present on all products
+  const gallery = product.gallery && product.gallery.length > 0 
+    ? product.gallery 
+    : [{ url: product.image, alt: product.name }];
+    
+  const finishes = product.finishes || [];
+  
+  // Handle case where description is just a string (from shopProducts) or missing entirely
+  const descInspiration = typeof product.description === 'string' 
+    ? product.description 
+    : (product.description?.inspiration || 'A beautiful piece crafted with precision.');
+    
+  const descDesign = typeof product.description === 'object' && product.description?.design 
+    ? product.description.design 
+    : null;
+
+  const isWishlisted = wishlist.includes(product.id);
+
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    toggleWishlist(product.id);
+  };
+
+  const handleAddToCart = () => {
+    // We mock the shop product structure for the animation
+    const mockProduct = {
+      id: product.id.toString(),
+      name: product.name,
+      category: 'Necklace',
+      collection: 'New Arrivals',
+      price: `₹${product.newPrice}`,
+      tagline: product.tagline || '',
+      description: typeof product.description === 'string' ? product.description : (product.description?.design || ''),
+      hallmark: product.hallmark || '',
+      sizes: product.sizes || [],
+      specs: product.specs || [],
+      details: product.details || [],
+      colorTheme: product.colorTheme || '#E5E4E2',
+      ringGeometry: product.ringGeometry || {
+        radius: 1.4, tubularRadius: 0.28, radialSegments: 32, tubularSegments: 64,
+        hasDiamonds: false, diamondCount: 0, diamondSize: 0, diamondLayout: 'none' as const,
+        twist: false, facets: false
+      }
+    };
+    triggerPackagingAnimation(mockProduct, 'Standard');
+  };
+
+  return (
+    <div className="min-h-screen bg-[#fafafa] pt-24 pb-12">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        
+        {/* Breadcrumb (Optional, basic implementation) */}
+        <div className="text-[10px] uppercase tracking-widest text-gray-500 mb-8 mt-4">
+          <span className="hover:text-black cursor-pointer" onClick={() => router.push('/')}>Home</span> 
+          <span className="mx-2">/</span> 
+          <span className="hover:text-black cursor-pointer" onClick={() => router.push('/shop')}>Shop</span>
+          <span className="mx-2">/</span>
+          <span className="text-black">{product.name}</span>
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-12">
+          
+          {/* Left Column: Image Gallery */}
+          <div className="w-full md:w-1/2 flex flex-col gap-4">
+            <div className="aspect-[4/5] md:aspect-square relative bg-white rounded-2xl p-8 shadow-sm border border-gray-100 flex items-center justify-center">
+              <Image 
+                src={gallery[activeImageIndex]?.url || gallery[0]?.url}
+                alt={gallery[activeImageIndex]?.alt || 'Product Image'}
+                fill
+                className="object-contain p-8"
+              />
+              <button className="absolute bottom-4 right-4 bg-white/80 backdrop-blur border border-black/10 text-xs px-3 py-1.5 rounded-full flex items-center gap-2 hover:bg-white transition-colors">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                </svg>
+                See Similar
+              </button>
+              <div className="absolute bottom-4 left-4 flex items-center gap-1 text-xs font-semibold text-gray-600 bg-white/80 backdrop-blur px-2 py-1 rounded-full border border-black/5">
+                <span className="text-amber-400">★</span>
+                <span>{product.rating} | {product.reviewsCount}</span>
+              </div>
+            </div>
+            
+            {/* Thumbnails */}
+            {gallery.length > 1 && (
+              <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                {gallery.map((img, idx) => (
+                  <button 
+                    key={idx}
+                    onClick={() => setActiveImageIndex(idx)}
+                    className={`relative w-20 h-20 shrink-0 bg-white rounded-xl border ${activeImageIndex === idx ? 'border-black' : 'border-gray-200'} p-2 hover:border-black/50 transition-colors`}
+                  >
+                    <Image src={img.url} alt={img.alt} fill className="object-contain p-2" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Right Column: Details */}
+          <div className="w-full md:w-1/2 flex flex-col">
+            
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <div className="flex items-end gap-3 mb-1">
+                  <span className="text-3xl font-bold">₹{product.newPrice || product.price?.replace('₹', '') || '0'}</span>
+                  {product.oldPrice && <span className="text-lg text-gray-400 line-through mb-1">₹{product.oldPrice}</span>}
+                </div>
+                <p className="text-[10px] text-gray-400 uppercase tracking-widest">MRP Incl. of all taxes</p>
+              </div>
+              
+              <div className="flex items-center gap-4">
+                <button onClick={handleToggleWishlist} className="hover:scale-110 transition-transform">
+                  {isWishlisted ? (
+                    <svg className="w-6 h-6 text-[#0B5E64]" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                  ) : (
+                    <svg className="w-6 h-6 text-gray-400 hover:text-[#0B5E64]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                  )}
+                </button>
+                <button className="hover:scale-110 transition-transform text-gray-400 hover:text-black">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <h1 className="text-xl text-gray-700 mb-2">{product.name}</h1>
+            <p className="text-sm font-semibold tracking-wide uppercase text-black mb-8">Made With {product.material || 'Premium Material'}</p>
+
+            {/* Choose Finish */}
+            {finishes.length > 0 && (
+              <div className="mb-8">
+                <p className="text-sm text-gray-600 mb-4">Choose Your Finish</p>
+                <div className="flex gap-4">
+                  {finishes.map((finish, idx) => (
+                    <button 
+                      key={idx}
+                      onClick={() => setSelectedFinish(idx)}
+                      className={`flex flex-col items-center p-3 border rounded-xl transition-all ${selectedFinish === idx ? 'border-black shadow-md' : 'border-gray-200 hover:border-gray-300'}`}
+                    >
+                      <div className="w-16 h-16 relative mb-2">
+                        <Image src={finish.image} alt={finish.name} fill className="object-contain" />
+                      </div>
+                      <span className="text-[10px] font-bold tracking-widest uppercase">{finish.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Estimated Delivery */}
+            <div className="mb-8">
+              <p className="text-sm text-gray-600 mb-2">Estimated Delivery Time</p>
+              <div className="flex border border-gray-200 rounded-lg overflow-hidden bg-white max-w-sm mb-6">
+                <input 
+                  type="text" 
+                  placeholder="Enter 6 digit pincode" 
+                  className="flex-1 px-4 py-3 text-sm focus:outline-none"
+                  value={pincode}
+                  onChange={(e) => setPincode(e.target.value)}
+                  maxLength={6}
+                />
+                <button className="bg-[#0B5E64] text-white px-6 text-sm font-semibold hover:bg-[#08494E] transition-colors">
+                  Check
+                </button>
+              </div>
+
+
+
+              {/* Gift Wrap */}
+              <div className="flex items-center gap-2 mb-2">
+                <input 
+                  type="checkbox" 
+                  id="giftWrap" 
+                  checked={isGift}
+                  onChange={(e) => setIsGift(e.target.checked)}
+                  className="w-4 h-4 text-[#0B5E64] focus:ring-[#0B5E64] border-gray-300 rounded"
+                />
+                <label htmlFor="giftWrap" className="text-sm text-gray-700">
+                  Is this a <span className="text-[#f6899b] font-semibold">Gift?</span> 🎁 Wrap it for Just (₹ 50)
+                </label>
+              </div>
+            </div>
+
+            {/* Product Description Expandable */}
+            <div className="mb-12 bg-[#fafafa]">
+              <div className="bg-[#fce4e9]/30 py-3 px-4 rounded-t-xl border border-b-0 border-[#fce4e9]">
+                <span className="text-gray-700 text-lg font-medium">Product Description</span>
+              </div>
+              <div className="border border-[#fce4e9] rounded-b-xl p-6 bg-white">
+                <div className="text-sm text-gray-700 space-y-4">
+                  <div>
+                    <h4 className="font-bold text-black mb-1">{descDesign ? 'The Inspiration:' : 'Details:'}</h4>
+                    <p className="leading-relaxed">
+                      {isDescriptionExpanded 
+                        ? descInspiration 
+                        : `${descInspiration.substring(0, 100)}...`}
+                    </p>
+                  </div>
+                  
+                  {isDescriptionExpanded && descDesign && (
+                    <div className="mt-4">
+                      <h4 className="font-bold text-black mb-1">The Design:</h4>
+                      <p className="leading-relaxed">{descDesign}</p>
+                    </div>
+                  )}
+                  
+                  {descInspiration.length > 100 && (
+                    <button 
+                      onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                      className="text-[#849fb4] text-sm hover:underline font-medium mt-2 focus:outline-none"
+                    >
+                      {isDescriptionExpanded ? 'Show Less' : 'Show More'}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Action Area (Add to Cart logic etc, simplified for now since cart animates from card) */}
+            <button 
+              onClick={handleAddToCart}
+              className="w-full py-4 bg-[#0B5E64] text-white font-bold tracking-widest uppercase rounded-xl shadow-lg hover:bg-[#08494E] transition-colors"
+            >
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Similar Products Section */}
+      <SimilarProducts currentProductId={product.id} />
+    </div>
+  );
+}

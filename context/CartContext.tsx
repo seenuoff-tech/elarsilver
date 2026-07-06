@@ -9,6 +9,7 @@ export interface CartItem {
   price: string;
   size: string;
   quantity: number;
+  image?: string;
 }
 
 interface CartContextType {
@@ -19,7 +20,7 @@ interface CartContextType {
   activeAnimation: { product: ShopProduct; size: string } | null;
   triggerPackagingAnimation: (product: ShopProduct, size: string) => void;
   confirmAddToCart: () => void;
-  addToCartDirect: (product: { id: string; name: string; price: string }, size: string) => void;
+  addToCartDirect: (product: { id: string; name: string; price: string; image?: string }, size: string) => void;
   removeFromCart: (id: string, size: string) => void;
   clearCart: () => void;
 }
@@ -39,7 +40,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [cartItems]);
 
   // Direct add to cart (used for quantity controls or bypassing animation)
-  const addToCartDirect = (product: { id: string; name: string; price: string }, size: string) => {
+  const addToCartDirect = (product: { id: string; name: string; price: string; image?: string }, size: string) => {
     setCartItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex(
         (item) => item.id === product.id && item.size === size
@@ -57,6 +58,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           id: product.id,
           name: product.name,
           price: product.price,
+          image: product.image || `/images/${product.id}.png`,
           size,
           quantity: 1,
         },
@@ -73,7 +75,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const confirmAddToCart = () => {
     if (!activeAnimation) return;
     const { product, size } = activeAnimation;
-    addToCartDirect({ id: product.id, name: product.name, price: product.price }, size);
+    addToCartDirect({ id: product.id, name: product.name, price: product.price, image: (product as any).image }, size);
     setActiveAnimation(null);
   };
 

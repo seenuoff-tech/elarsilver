@@ -27,45 +27,7 @@ export default function StoreFront() {
           <p className="text-neutral-600 font-light text-base md:text-lg leading-relaxed">
             Step into the world of ELARA SILVER. Our flagship boutique is designed to be an immersive gallery of luminous artistry. Experience the weight, the brilliance, and the unparalleled craftsmanship of our collections in person.
           </p>
-          <p className="text-neutral-500 font-light text-sm md:text-base leading-relaxed">
-            Discover exclusive in-store collections and enjoy personalized styling consultations with our dedicated artisans.
-          </p>
-          
-          {/* Added Features/Content */}
-          <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 rounded-full bg-[#0B5E64]/10 flex items-center justify-center shrink-0">
-                <svg className="w-3.5 h-3.5 text-[#0B5E64]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <span className="text-xs md:text-sm font-medium text-neutral-700 uppercase tracking-wide">Custom Engraving</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 rounded-full bg-[#0B5E64]/10 flex items-center justify-center shrink-0">
-                <svg className="w-3.5 h-3.5 text-[#0B5E64]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <span className="text-xs md:text-sm font-medium text-neutral-700 uppercase tracking-wide">Jewellery Spa</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 rounded-full bg-[#0B5E64]/10 flex items-center justify-center shrink-0">
-                <svg className="w-3.5 h-3.5 text-[#0B5E64]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <span className="text-xs md:text-sm font-medium text-neutral-700 uppercase tracking-wide">Expert Styling</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 rounded-full bg-[#0B5E64]/10 flex items-center justify-center shrink-0">
-                <svg className="w-3.5 h-3.5 text-[#0B5E64]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <span className="text-xs md:text-sm font-medium text-neutral-700 uppercase tracking-wide">In-store Exclusives</span>
-            </div>
-          </div>
+
 
           {/* Call to action */}
           <div className="pt-6 flex items-center gap-4">
