@@ -414,13 +414,28 @@ export default function ProductsManagement() {
                   </select>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Main Image URL</label>
                   <input 
                     type="text" 
                     value={editingProduct?.image || ''}
                     onChange={(e) => editingProduct && setEditingProduct({...editingProduct, image: e.target.value})}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none" 
                     placeholder="e.g. /images/hero1.png or https://..." 
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Sub Images (Comma separated URLs)</label>
+                  <textarea 
+                    value={editingProduct?.gallery?.map((g: any) => g.url).join(',\n') || ''}
+                    onChange={(e) => {
+                      if (!editingProduct) return;
+                      const urls = e.target.value.split(',').map(url => url.trim()).filter(url => url);
+                      const gallery = urls.map(url => ({ url, alt: editingProduct.name || 'Subimage' }));
+                      setEditingProduct({...editingProduct, gallery});
+                    }}
+                    rows={3}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none" 
+                    placeholder="https://image1.jpg,&#10;https://image2.jpg" 
                   />
                 </div>
                 <div className="md:col-span-2">
