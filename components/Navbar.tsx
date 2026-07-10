@@ -128,7 +128,7 @@ export default function Navbar() {
           <div className="flex justify-center items-center w-1/3">
             <Link href="/" className="hover:scale-105 transition-transform duration-500 flex items-center justify-center">
               {isScrolled ? (
-                <span className="text-3xl font-light tracking-widest text-[#0B5E64] uppercase ml-2">
+                <span className="text-2xl font-medium tracking-widest text-gray-800 uppercase ml-2">
                   ELARA
                 </span>
               ) : (
