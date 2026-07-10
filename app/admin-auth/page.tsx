@@ -31,7 +31,7 @@ export default function AdminDashboard() {
         <h1 className="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
         <div className="flex items-center gap-3">
           <Link 
-            href="/admin/products/new"
+            href="/admin-auth/products/new"
             className="px-4 py-2 bg-[#0B5E64] text-white text-sm font-medium rounded-lg hover:bg-[#084A4F] transition-colors"
           >
             Add Product
@@ -104,7 +104,7 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 lg:col-span-2">
           <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
-            <Link href="/admin/orders" className="text-sm text-[#0B5E64] hover:underline font-medium">View all</Link>
+            <Link href="/admin-auth/orders" className="text-sm text-[#0B5E64] hover:underline font-medium">View all</Link>
           </div>
           <div className="p-6">
             <div className="overflow-x-auto">
@@ -153,19 +153,19 @@ export default function AdminDashboard() {
             <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
           </div>
           <div className="p-6 space-y-4">
-            <Link href="/admin/products" className="flex items-center p-3 text-sm font-medium text-gray-700 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+            <Link href="/admin-auth/products" className="flex items-center p-3 text-sm font-medium text-gray-700 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
               <svg className="w-5 h-5 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
               </svg>
               Add New Product
             </Link>
-            <Link href="/admin/hero" className="flex items-center p-3 text-sm font-medium text-gray-700 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+            <Link href="/admin-auth/hero" className="flex items-center p-3 text-sm font-medium text-gray-700 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
               <svg className="w-5 h-5 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               Update Hero Banner
             </Link>
-            <Link href="/admin/reports" className="flex items-center p-3 text-sm font-medium text-gray-700 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+            <Link href="/admin-auth/reports" className="flex items-center p-3 text-sm font-medium text-gray-700 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
               <svg className="w-5 h-5 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
