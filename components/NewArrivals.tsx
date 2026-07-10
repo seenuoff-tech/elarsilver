@@ -80,6 +80,11 @@ export default function NewArrivals() {
             
             {/* Details */}
             <div className="flex flex-col flex-grow px-1">
+              <Link href={`/product/${product.id}`} className="hover:underline">
+                <h3 className="text-sm font-medium text-gray-900 line-clamp-1 mb-1" title={product.name}>
+                  {product.name}
+                </h3>
+              </Link>
               <div className="flex items-center gap-1 mb-2">
                 <span className="text-sm font-semibold text-gray-800">{product.rating}</span>
                 <span className="text-amber-400 text-sm">★</span>
