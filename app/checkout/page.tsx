@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useCart } from '../../context/CartContext';
 import LuxuryButton from '../../components/luxury/LuxuryButton';
 import Image from 'next/image';
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -13,6 +15,7 @@ export default function CheckoutPage() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderId, setOrderId] = useState('');
+  const [orderedItems, setOrderedItems] = useState<any[]>([]);
 
   // Form states
   const [formData, setFormData] = useState({
@@ -66,15 +69,243 @@ export default function CheckoutPage() {
     e.preventDefault();
     setIsProcessing(true);
     
-    // Simulate payment gateway delay
-    setTimeout(() => {
+    // Simulate COD order processing
+    setTimeout(async () => {
       const generatedOrderId = `ELARA-${Math.floor(Math.random() * 900000) + 100000}`;
       setOrderId(generatedOrderId);
+
+      // Trigger Email API
+      try {
+        await fetch('/api/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId: generatedOrderId,
+            customerData: formData,
+            items: cartItems.map(item => ({
+              name: item.name,
+              quantity: item.quantity,
+              price: item.price
+            })),
+            total: formattedGrandTotal,
+            date: new Date().toLocaleDateString()
+          })
+        });
+      } catch (err) {
+        console.error("Failed to trigger emails", err);
+      }
+
       setIsProcessing(false);
+      setOrderedItems([...cartItems]);
       clearCart();
       setStep(3);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 2500);
+    }, 800);
+  };
+
+    const downloadInvoice = () => {
+    const doc = new jsPDF();
+    
+    // Header text on top left
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0, 0, 0);
+    doc.text("TAX INVOICE (Sales)", 14, 20);
+    
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text("Branch", 14, 30);
+    
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("ELARA SILVER", 14, 40);
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    
+    const startX = 14;
+    const colonX = 45;
+    let currY = 48;
+    
+    doc.text("GSTIN", startX, currY);
+    doc.text(`: 33HTQPS8640C1Z8`, colonX, currY);
+    
+    currY += 5;
+    doc.text("Address", startX, currY);
+    doc.text(`: 130/134 A North Car Street,`, colonX, currY);
+    currY += 5;
+    doc.text(`  Srivilliputtur - 626125`, colonX, currY);
+    
+    currY += 5;
+    doc.text("State", startX, currY);
+    doc.text(`: Tamil Nadu`, colonX, currY);
+    
+    currY += 5;
+    doc.text("State Code", startX, currY);
+    doc.text(`: 33`, colonX, currY);
+    
+    currY += 5;
+    doc.text("Country", startX, currY);
+    doc.text(`: India`, colonX, currY);
+    
+    currY += 5;
+    doc.text("Pin Code", startX, currY);
+    doc.text(`: 626125`, colonX, currY);
+    
+    currY += 5;
+    doc.text("Phone", startX, currY);
+    doc.text(`: 6369825925`, colonX, currY);
+    
+    currY += 10;
+    const now = new Date();
+    const dateOpts: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: '2-digit' };
+    const dateParts = now.toLocaleDateString('en-GB', dateOpts).split(' ');
+    const dateStr = `${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`;
+    const timeStr = now.toLocaleTimeString('en-GB', { hour12: false });
+    
+    doc.text(`Date : ${dateStr} Time : ${timeStr}`, startX, currY);
+    doc.text(`Order ID : ${orderId}`, startX + 90, currY);
+    
+    // Billed To
+    currY += 10;
+    doc.setFont("helvetica", "bold");
+    doc.text("Billed To:", 14, currY);
+    doc.setFont("helvetica", "normal");
+    
+    currY += 7;
+    doc.text(formData.fullName, 14, currY);
+    
+    const addressLines = doc.splitTextToSize(formData.address, 100);
+    currY += 5;
+    doc.text(addressLines, 14, currY);
+    
+    let currentY = currY + (addressLines.length * 5);
+    
+    doc.text(`${formData.city} - ${formData.pincode}`, 14, currentY);
+    currentY += 5;
+    doc.text(`Phone: ${formData.phone}`, 14, currentY);
+    currentY += 5;
+    doc.text(`Email: ${formData.email}`, 14, currentY);
+    
+    // Table
+    const tableColumn = ["Item", "Size", "Qty", "Price", "Total"];
+    const tableRows: any[] = [];
+    
+    orderedItems.forEach(item => {
+      const price = parseFloat(String(item.price).replace(/[^\d]/g, ''));
+      const total = price * item.quantity;
+      tableRows.push([
+        item.name,
+        item.size,
+        item.quantity.toString(),
+        `Rs. ${price.toLocaleString('en-IN')}`,
+        `Rs. ${total.toLocaleString('en-IN')}`
+      ]);
+    });
+    
+    autoTable(doc, {
+      startY: currentY + 10,
+      head: [tableColumn],
+      body: tableRows,
+      theme: 'grid',
+      headStyles: { fillColor: [11, 94, 100] }
+    });
+    
+    let afterTableY = (doc as any).lastAutoTable.finalY || 105;
+    
+    const currentSubtotal = orderedItems.reduce((acc, item) => {
+      const numericPrice = parseFloat(String(item.price).replace(/[^\d]/g, ''));
+      return acc + numericPrice * item.quantity;
+    }, 0);
+    
+    const taxableAmount = currentSubtotal / 1.05;
+    const cgst = taxableAmount * 0.025;
+    const sgst = taxableAmount * 0.025;
+    const currentGrandTotal = currentSubtotal > 0 ? currentSubtotal + 70 : 0;
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Subtotal: Rs. ${currentSubtotal.toLocaleString('en-IN')}`, 140, afterTableY + 10);
+    doc.text(`CGST (2.5%): Rs. ${cgst.toFixed(2)}`, 140, afterTableY + 15);
+    doc.text(`SGST (2.5%): Rs. ${sgst.toFixed(2)}`, 140, afterTableY + 20);
+    doc.text(`Shipping: Rs. 70`, 140, afterTableY + 25);
+    
+    doc.setFont("helvetica", "bold");
+    doc.text(`Grand Total: Rs. ${currentGrandTotal.toLocaleString('en-IN')}`, 140, afterTableY + 31);
+    
+    afterTableY += 15;
+    
+    // Check if we need a new page for T&C
+    if (afterTableY + 130 > doc.internal.pageSize.getHeight()) {
+       doc.addPage();
+       afterTableY = 20;
+    } else {
+       afterTableY += 25; // Space after totals
+    }
+    
+    doc.setFontSize(7);
+    doc.setFont("helvetica", "normal");
+    
+    // Line separator
+    doc.line(14, afterTableY, 196, afterTableY);
+    afterTableY += 5;
+    
+    doc.text("(Price includes hallmarking charges, consumable and packing material)", 105, afterTableY, { align: "center" });
+    doc.text("E.&O.E.", 196, afterTableY, { align: "right" });
+    
+    afterTableY += 6;
+    doc.setFont("helvetica", "bold");
+    doc.text("Terms & Conditions.", 14, afterTableY);
+    doc.setFont("helvetica", "normal");
+    
+    afterTableY += 5;
+    const tnc = [
+      "1. The charges to make receive payment specified in here includes tax, hallmark, Procurement, Wastage, Making Charges, Imitation Stones, Precious Stones, Artisan Work, Logistics and other inclusive,",
+      "2. Silver, wastage and making charges are calculated on gross weight only.",
+      "3. The Net Weight is only indicative and the actual may vary. However, in all cases, the Net Weight shown in the invoice will be considered.",
+      "4. If any defect is found in the jewel/material/design, the customer shall report the same to the Branch Manager immediately within three days, from the date ofpurchase. The company shall rectify the same, at its own cost.",
+      "5. All disputed are subject to the jurisdiction of the courts in srivilliputtur."
+    ];
+    
+    tnc.forEach(term => {
+      const lines = doc.splitTextToSize(term, 182);
+      doc.text(lines, 14, afterTableY);
+      afterTableY += lines.length * 3.5;
+    });
+    
+    afterTableY += 2;
+    doc.setFont("helvetica", "bold");
+    doc.text("Declaration", 14, afterTableY);
+    doc.setFont("helvetica", "normal");
+    afterTableY += 4;
+    
+    const declaration = "I have read, understood, and accept the terms and conditions mentioned above, the guidelines regarding quality specified at the backside of this invoice were explained to me in Tamil.\nThe above jewels mentioned in the invoice are according to my specification and I purchased / sold the jewels at my own wish/need, after due verification. Hereby, indicating the acceptance for above terms & conditions, received the product in good condition, and, doing the payment. I further acknowledge the amount stated is correct and accurate.";
+    
+    const decLines = doc.splitTextToSize(declaration, 182);
+    doc.text(decLines, 14, afterTableY);
+    afterTableY += decLines.length * 3.5;
+    
+    afterTableY += 12;
+    doc.setFont("helvetica", "bold");
+    doc.text("Customer Signature", 14, afterTableY);
+    doc.text("for ELARA SILVER", 196, afterTableY, { align: "right" });
+    
+    afterTableY += 5;
+    doc.setFont("helvetica", "normal");
+    doc.text("Authorised Signatory", 196, afterTableY, { align: "right" });
+    
+    afterTableY += 5;
+    doc.setFontSize(6);
+    doc.text("[x] I hereby consent to receive messages via WhatsApp, SMS or other social media platforms and also receive calls in my mobile number provided in this invoice.", 14, afterTableY);
+    
+    afterTableY += 6;
+    doc.setFillColor(11, 94, 100); 
+    doc.rect(14, afterTableY, 182, 6, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    doc.text("Thanks for preferring to shop at Elara Silver.", 105, afterTableY + 4, { align: "center" });
+    
+    doc.save(`Invoice_${orderId}.pdf`);
   };
 
   if (cartItems.length === 0 && step !== 3) {
@@ -200,30 +431,17 @@ export default function CheckoutPage() {
                   <div className="space-y-4">
                     <div className="flex items-center gap-3 pb-2 border-b border-black/10">
                       <input type="radio" checked readOnly className="w-4 h-4 accent-[#0B5E64]" />
-                      <span className="text-sm font-semibold tracking-wide">Credit / Debit Card</span>
+                      <span className="text-sm font-semibold tracking-wide">Cash On Delivery (COD)</span>
                     </div>
-
-                    <div className="space-y-2">
-                      <label className="text-[10px] tracking-widest uppercase text-black/60 font-semibold">Card Number</label>
-                      <input required type="text" name="cardNumber" value={paymentData.cardNumber} onChange={handlePaymentChange} maxLength={19} className="w-full bg-[#F5F5F7] border border-transparent focus:border-[#0B5E64] p-4 text-sm outline-none transition-colors font-mono tracking-widest" placeholder="XXXX XXXX XXXX XXXX" />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-[10px] tracking-widest uppercase text-black/60 font-semibold">Valid Thru</label>
-                        <input required type="text" name="expiry" value={paymentData.expiry} onChange={handlePaymentChange} maxLength={5} className="w-full bg-[#F5F5F7] border border-transparent focus:border-[#0B5E64] p-4 text-sm outline-none transition-colors font-mono tracking-widest" placeholder="MM/YY" />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] tracking-widest uppercase text-black/60 font-semibold">CVV</label>
-                        <input required type="password" name="cvv" value={paymentData.cvv} onChange={handlePaymentChange} maxLength={4} className="w-full bg-[#F5F5F7] border border-transparent focus:border-[#0B5E64] p-4 text-sm outline-none transition-colors font-mono tracking-widest" placeholder="***" />
-                      </div>
-                    </div>
+                    <p className="text-xs text-black/60 pt-2 pb-4">
+                      Pay conveniently at your doorstep when the product arrives. Razorpay integration will be added in a future update.
+                    </p>
                   </div>
 
                   <div className="pt-6">
                     <LuxuryButton isCTA={true} className="w-full">
                       <button type="submit" disabled={isProcessing} className="w-full px-10 py-5 bg-[#0B5E64] text-white text-xs font-bold tracking-[0.2em] uppercase hover:bg-black transition-colors duration-500 shadow-xl shadow-black/10 disabled:opacity-50">
-                        {isProcessing ? 'Authorizing...' : `Pay ${formattedGrandTotal}`}
+                        {isProcessing ? 'Placing Order...' : `Place Order (COD)`}
                       </button>
                     </LuxuryButton>
                   </div>
@@ -256,11 +474,22 @@ export default function CheckoutPage() {
                   <p className="text-lg font-mono font-bold tracking-widest text-[#0B5E64]">{orderId}</p>
                 </div>
 
-                <LuxuryButton isCTA={false}>
-                  <button onClick={() => router.push('/')} className="px-10 py-4 bg-transparent border border-black text-black text-xs font-bold tracking-[0.2em] uppercase hover:bg-black hover:text-white transition-colors duration-500">
-                    Return to Collection
-                  </button>
-                </LuxuryButton>
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  <LuxuryButton isCTA={false}>
+                    <button onClick={downloadInvoice} className="px-10 py-4 bg-[#0B5E64] text-white text-xs font-bold tracking-[0.2em] uppercase hover:bg-black transition-colors duration-500 flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                      Download Invoice
+                    </button>
+                  </LuxuryButton>
+                  
+                  <LuxuryButton isCTA={false}>
+                    <button onClick={() => router.push('/')} className="px-10 py-4 bg-transparent border border-black text-black text-xs font-bold tracking-[0.2em] uppercase hover:bg-black hover:text-white transition-colors duration-500">
+                      Return to Collection
+                    </button>
+                  </LuxuryButton>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

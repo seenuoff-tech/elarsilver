@@ -3,40 +3,50 @@ import Link from 'next/link';
 
 const LuxuryWithinReach = () => {
   return (
-    <section className="relative w-full max-w-5xl mx-auto my-16 px-4 z-10">
-      {/* Banner */}
-      <div className="bg-[#0B5E64] rounded-xl py-12 md:py-16 text-center">
-        <h2 className="text-white text-3xl md:text-4xl font-semibold tracking-wide drop-shadow-sm">
-          Everyday Luxury
-        </h2>
-      </div>
+    <section className="w-full max-w-5xl mx-auto my-16 px-4">
+      <h2 className="text-center text-2xl md:text-4xl font-semibold text-black tracking-wide mb-8">
+        Affordable Elegance
+      </h2>
 
-      {/* Floating Buttons */}
-      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex flex-wrap justify-center gap-4 w-full px-4 z-20">
-        <Link href="/gifts?price=under-999" className="group">
-          <div className="bg-gradient-to-br from-[#fdfdfd] to-[#e6e6e6] border-[1.5px] border-[#d1d1d1] text-[#333333] px-8 py-3 rounded-full shadow-md font-semibold tracking-wide group-hover:-translate-y-1 transition-transform duration-300 whitespace-nowrap">
-            Under ₹999
+      <div className="flex md:justify-center overflow-x-auto snap-x snap-mandatory gap-4 pb-4 w-full hide-scrollbar">
+        <Link href="/gifts?price=under-999" className="group min-w-[130px] md:min-w-[160px] snap-center">
+          <div className="bg-[#0B5E64] border border-black/5 text-white rounded-[1.25rem] p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center h-full relative overflow-hidden">
+            <span className="text-sm md:text-base font-medium opacity-90 mb-1 z-10">Under</span>
+            <span className="text-2xl md:text-3xl font-bold tracking-wider z-10">₹999</span>
           </div>
         </Link>
         
-        <Link href="/gifts?price=under-1999" className="group">
-          <div className="bg-gradient-to-br from-[#fdfdfd] to-[#e6e6e6] border-[1.5px] border-[#d1d1d1] text-[#333333] px-8 py-3 rounded-full shadow-md font-semibold tracking-wide group-hover:-translate-y-1 transition-transform duration-300 whitespace-nowrap">
-            Under ₹1999
+        <Link href="/gifts?price=under-1999" className="group min-w-[130px] md:min-w-[160px] snap-center">
+          <div className="bg-[#0B5E64] border border-black/5 text-white rounded-[1.25rem] p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center h-full relative overflow-hidden">
+            <span className="text-sm md:text-base font-medium opacity-90 mb-1 z-10">Under</span>
+            <span className="text-2xl md:text-3xl font-bold tracking-wider z-10">₹1999</span>
           </div>
         </Link>
 
-        <Link href="/gifts?price=under-2999" className="group">
-          <div className="bg-gradient-to-br from-[#fdfdfd] to-[#e6e6e6] border-[1.5px] border-[#d1d1d1] text-[#333333] px-8 py-3 rounded-full shadow-md font-semibold tracking-wide group-hover:-translate-y-1 transition-transform duration-300 whitespace-nowrap">
-            Under ₹2999
+        <Link href="/gifts?price=under-2999" className="group min-w-[130px] md:min-w-[160px] snap-center">
+          <div className="bg-[#0B5E64] border border-black/5 text-white rounded-[1.25rem] p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center h-full relative overflow-hidden">
+            <span className="text-sm md:text-base font-medium opacity-90 mb-1 z-10">Under</span>
+            <span className="text-2xl md:text-3xl font-bold tracking-wider z-10">₹2999</span>
           </div>
         </Link>
 
-        <Link href="/gifts?price=under-4999" className="group">
-          <div className="bg-gradient-to-br from-[#fdfdfd] to-[#e6e6e6] border-[1.5px] border-[#d1d1d1] text-[#333333] px-8 py-3 rounded-full shadow-md font-semibold tracking-wide group-hover:-translate-y-1 transition-transform duration-300 whitespace-nowrap">
-            Under ₹4999
+        <Link href="/gifts?price=under-4999" className="group min-w-[130px] md:min-w-[160px] snap-center">
+          <div className="bg-[#0B5E64] border border-black/5 text-white rounded-[1.25rem] p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center h-full relative overflow-hidden">
+            <span className="text-sm md:text-base font-medium opacity-90 mb-1 z-10">Under</span>
+            <span className="text-2xl md:text-3xl font-bold tracking-wider z-10">₹4999</span>
           </div>
         </Link>
       </div>
+
+      <style jsx>{`
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </section>
   );
 };

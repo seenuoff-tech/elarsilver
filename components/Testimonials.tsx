@@ -4,34 +4,34 @@ import React from 'react';
 
 const testimonials = [
   {
-    name: "Disha Kumbhar",
+    name: "Karthi Chidambaram",
     date: "December 21, 2025",
-    text: "On my birthday last year, he got me earrings from Mia, and this year he got me a locket to match the earrings. Mia, to me, represents the way Dad expresses his love to me...",
+    text: "I recently bought a beautiful silver ring from Elara Silver Shop for my anniversary. The craftsmanship is absolutely stunning and it fits perfectly. Their customer service made the whole experience memorable.",
   },
   {
-    name: "Yashila Gupta",
+    name: "Nithya Ramasamy",
     date: "December 14, 2025",
-    text: "Mia means reliable and resilient products to face every day and small celebrations after overcoming the daily obstacles. I am sorry if my English is a bit...",
+    text: "The silver necklace I purchased at Elara Silver Shop is now my everyday essential. It's elegant, lightweight, and adds the perfect touch to any outfit. I constantly get compliments on it!",
   },
   {
-    name: "Aina Thakur",
+    name: "Arjun Prabhakar",
     date: "July 12, 2025",
-    text: "For me, Mia by Tanishq is something that represents and celebrates modern femininity, which is subtle, strong, and yet stylish. It is a gentle expression of...",
+    text: "I was looking for a sturdy yet stylish silver chain, and Elara Silver Shop had exactly what I needed. The quality of the silver is top-notch, and it feels incredibly premium.",
   },
   {
-    name: "Mashar T",
+    name: "Meenakshi Sundaram",
     date: "December 13, 2025",
-    text: "I recently discovered Mia by Tanishq and loved how it offers beautiful designs at very budget-friendly prices. I chose to buy a bracelet as a gift for my loved one...",
+    text: "I gifted a pair of silver earrings from Elara Silver Shop to my sister. She was thrilled with the intricate design and the radiant finish. Truly the best place for authentic silver jewelry.",
   },
   {
-    name: "Vivek",
+    name: "Dinesh Karthikeyan",
     date: "December 21, 2025",
-    text: "The name reflects a shift from jewellery being a family asset or an investment to being something deeply personal. It's about a woman saying, This is mine — it reflects...",
+    text: "My new silver bracelet from Elara Silver Shop is absolutely gorgeous! It reflects modern style while maintaining a classic charm. I am very impressed with their unique collection.",
   },
   {
-    name: "Sathiyapriya T",
+    name: "Sathiyapriya Thirumalai",
     date: "December 13, 2025",
-    text: "Mia by Tanishq, to me, represents celebrating modern women and their individuality. It's not just jewelry — it's about self-expression, confidence, and milestones in a...",
+    text: "I bought a delicate silver anklet at Elara Silver Shop and I couldn't be happier. The detail on the piece is flawless, and it's so comfortable for daily wear. Highly recommended!",
   },
 ];
 

@@ -61,20 +61,20 @@ export default function HeroSlider() {
       opacity: 1,
     },
     left: {
-      x: '-85%',
+      x: '-20%',
       y: '-50%',
       top: '50%',
       scale: 0.85,
       zIndex: 5,
-      opacity: 0.6,
+      opacity: 0.8,
     },
     right: {
-      x: '85%',
+      x: '20%',
       y: '-50%',
       top: '50%',
       scale: 0.85,
       zIndex: 5,
-      opacity: 0.6,
+      opacity: 0.8,
     },
     hidden: {
       x: '0%',
@@ -89,7 +89,7 @@ export default function HeroSlider() {
   return (
     <div 
       className="relative w-full overflow-hidden flex items-center justify-center"
-      style={{ minHeight: '80vh', backgroundColor: '#ffffff', marginTop: '120px', marginBottom: '40px' }}
+      style={{ minHeight: '80vh', backgroundColor: '#ffffff', marginTop: '240px', marginBottom: '40px' }}
     >
       {slides.map((slide, index) => {
         const position = getPosition(index);
@@ -101,47 +101,14 @@ export default function HeroSlider() {
             initial="hidden"
             animate={position}
             transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
-            className="absolute rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-black/5"
+            className="absolute rounded-[2.5rem] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-black/5"
             style={{ width: '75%', height: '85%', maxWidth: '1200px' }}
           >
             <div 
               className="absolute inset-0 bg-cover bg-center"
               style={{ backgroundImage: `url(${slide.image})` }}
             />
-            {/* Dark overlay for better text readability */}
-            <div className="absolute inset-0 bg-black/20" />
-            
-            {/* Text Content */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-8">
-              <motion.h2 
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: position === 'center' ? 0 : 20, opacity: position === 'center' ? 1 : 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="text-4xl md:text-6xl font-light mb-4 tracking-wider drop-shadow-md"
-              >
-                {slide.title}
-              </motion.h2>
-              <motion.p 
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: position === 'center' ? 0 : 20, opacity: position === 'center' ? 1 : 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                className="text-lg md:text-xl font-light mb-8 max-w-lg drop-shadow-md"
-              >
-                {slide.subtitle}
-              </motion.p>
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: position === 'center' ? 0 : 20, opacity: position === 'center' ? 1 : 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-              >
-                <Link 
-                  href={slide.link}
-                  className="px-8 py-3 bg-white text-black hover:bg-black hover:text-white transition-colors duration-300 text-sm tracking-widest uppercase shadow-lg"
-                >
-                  {slide.buttonText}
-                </Link>
-              </motion.div>
-            </div>
+
           </motion.div>
         );
       })}

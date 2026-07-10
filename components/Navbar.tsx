@@ -224,25 +224,9 @@ export default function Navbar() {
             showLinks ? 'max-h-40 opacity-100 pb-4 overflow-visible' : 'max-h-0 opacity-0 pb-0 overflow-hidden'
           }`}
         >
-          {/* Material Toggle */}
-          <div className="flex items-center border border-[#D4AF37] rounded-full p-1 mb-6 mt-2">
-            <button
-              onClick={() => setActiveMaterial('Silver')}
-              className={`px-8 py-2 text-sm font-medium rounded-full transition-colors ${activeMaterial === 'Silver' ? 'bg-[#0B5E64] text-white shadow-sm' : 'bg-transparent text-gray-600 hover:text-black'}`}
-            >
-              Silver Jewellery
-            </button>
-            <button
-              onClick={() => setActiveMaterial('Sleet')}
-              className={`px-8 py-2 text-sm font-medium rounded-full transition-colors ${activeMaterial === 'Sleet' ? 'bg-[#0B5E64] text-white shadow-sm' : 'bg-transparent text-gray-600 hover:text-black'}`}
-            >
-              Sleet Jewellery
-            </button>
-          </div>
-
-          <div className="flex items-center gap-8 md:gap-12 text-[13px] font-medium text-gray-800 tracking-widest uppercase relative">
+          <div className="flex items-center gap-8 md:gap-12 text-[13px] font-medium text-gray-800 tracking-widest uppercase relative mb-4 mt-2">
             {navigationMenu.map((nav) => (
-              <div key={nav.name} className="relative py-4 desktop-dropdown">
+              <div key={nav.name} className="relative py-2 desktop-dropdown">
                 <span 
                   onClick={(e) => {
                     e.stopPropagation();
@@ -273,6 +257,22 @@ export default function Navbar() {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Material Toggle */}
+          <div className="flex items-center border border-[#D4AF37] rounded-full p-1 mb-2 mt-2">
+            <button
+              onClick={() => setActiveMaterial('Silver')}
+              className={`w-48 py-2.5 text-sm font-medium rounded-full transition-all duration-300 flex items-center justify-center ${activeMaterial === 'Silver' ? 'bg-[#0B5E64] text-white shadow-md' : 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-50'}`}
+            >
+              Silver Jewellery
+            </button>
+            <button
+              onClick={() => setActiveMaterial('Sleet')}
+              className={`w-48 py-2.5 text-sm font-medium rounded-full transition-all duration-300 flex items-center justify-center ${activeMaterial === 'Sleet' ? 'bg-[#0B5E64] text-white shadow-md' : 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-50'}`}
+            >
+              Sleet Jewellery
+            </button>
           </div>
         </div>
       </div>

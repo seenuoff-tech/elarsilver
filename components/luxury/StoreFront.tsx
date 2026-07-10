@@ -34,9 +34,6 @@ export default function StoreFront() {
             <button className="px-8 py-3.5 bg-[#0B5E64] text-white text-xs font-bold tracking-[0.2em] uppercase hover:bg-black transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-1">
               Get Directions
             </button>
-            <button className="px-8 py-3.5 bg-transparent border border-[#0B5E64] text-[#0B5E64] text-xs font-bold tracking-[0.2em] uppercase hover:bg-[#0B5E64] hover:text-white transition-all duration-300">
-              Book Visit
-            </button>
           </div>
         </motion.div>
 

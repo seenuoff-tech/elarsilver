@@ -220,6 +220,14 @@ export default function ProductClient() {
               </div>
             </div>
 
+            {/* Action Area (Add to Cart logic etc, simplified for now since cart animates from card) */}
+            <button 
+              onClick={handleAddToCart}
+              className="w-full py-4 bg-[#0B5E64] text-white font-bold tracking-widest uppercase rounded-xl shadow-lg hover:bg-[#08494E] transition-colors mb-12"
+            >
+              Add to Cart
+            </button>
+
             {/* Product Description Expandable */}
             <div className="mb-12 bg-[#fafafa]">
               <div className="bg-[#fce4e9]/30 py-3 px-4 rounded-t-xl border border-b-0 border-[#fce4e9]">
@@ -254,14 +262,6 @@ export default function ProductClient() {
                 </div>
               </div>
             </div>
-            
-            {/* Action Area (Add to Cart logic etc, simplified for now since cart animates from card) */}
-            <button 
-              onClick={handleAddToCart}
-              className="w-full py-4 bg-[#0B5E64] text-white font-bold tracking-widest uppercase rounded-xl shadow-lg hover:bg-[#08494E] transition-colors"
-            >
-              Add to Cart
-            </button>
           </div>
         </div>
       </div>

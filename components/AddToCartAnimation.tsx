@@ -67,24 +67,24 @@ export default function AddToCartAnimation() {
 
     const timer2 = setTimeout(() => {
       setStep(2); // Step 2: Box slides in and opens
-    }, 1000);
+    }, 400);
 
     const timer3 = setTimeout(() => {
       setStep(3); // Step 3: Ring floats into box
-    }, 2000);
+    }, 800);
 
     const timer4 = setTimeout(() => {
       setStep(4); // Step 4: Box closes, ribbon wraps, tag appears
       playChime(); // Play the synthesized chime sound effect
-    }, 2800);
+    }, 1200);
 
     const timer5 = setTimeout(() => {
       setStep(5); // Step 5: Box shrinks and flies to navbar cart
-    }, 4200);
+    }, 1600);
 
     const timerEnd = setTimeout(() => {
       confirmAddToCart(); // Animation finished, add item
-    }, 5000);
+    }, 2000);
 
     return () => {
       clearTimeout(timer2);

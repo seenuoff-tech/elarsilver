@@ -14,7 +14,6 @@ import ConciergeAssistant from '../components/luxury/ConciergeAssistant';
 import LuxuryWithinReach from '../components/LuxuryWithinReach';
 import HotRightNowBanner from '../components/HotRightNowBanner';
 import ShopByColour from '../components/ShopByColour';
-import CelebrityBanner from '../components/CelebrityBanner';
 import MensCollection from '../components/MensCollection';
 import FirstAccessBanner from '../components/FirstAccessBanner';
 
@@ -47,9 +46,6 @@ export default function Home() {
       {/* Curated For You Section */}
       <CuratedForYou />
 
-      {/* Celebrity Banner */}
-      <CelebrityBanner />
-
       {/* Men's Collection */}
       <MensCollection />
 
@@ -61,23 +57,6 @@ export default function Home() {
         <StoreFront />
       </div>
 
-      {/* Immersive Parallax Quote Section */}
-      <section className="relative bg-[#ffffff] py-40 px-6 overflow-hidden z-10">
-        {/* Volumetric background lights */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full bg-silver-chrome/5 blur-[120px] pointer-events-none" />
-        
-        <div className="relative w-full max-w-6xl mx-auto text-center space-y-4 z-10 bg-[#0B5E64] py-8 px-8 md:py-12 md:px-16 rounded-[2rem] shadow-2xl">
-          <svg className="w-8 h-8 md:w-10 md:h-10 text-white/40 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M50 5L63 38L96 50L63 62L50 95L37 62L4 50L37 38L50 5Z" stroke="currentColor" strokeWidth="2" strokeDasharray="3 3"/>
-          </svg>
-          <blockquote className="text-2xl md:text-4xl font-extralight tracking-wide italic text-white leading-relaxed max-w-5xl mx-auto drop-shadow-sm">
-            &ldquo;Silver is the mirror of the moon. It catches the fluid essence of shadows, forging them into permanent light.&rdquo;
-          </blockquote>
-          <cite className="text-[10px] tracking-[0.4em] uppercase text-white/70 block font-semibold not-italic pt-2">
-            — ELARA Atelier
-          </cite>
-        </div>
-      </section>
 
       <Testimonials />
     </div>
