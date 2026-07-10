@@ -6,11 +6,13 @@ import Link from 'next/link';
 import { useWishlist } from '../context/WishlistContext';
 import { useProducts } from '../context/ProductsContext';
 import { useCart } from '../context/CartContext';
+import { usePricing } from './PricingProvider';
 
 export default function NewArrivals() {
   const { wishlist, toggleWishlist } = useWishlist();
   const { products } = useProducts();
   const { triggerPackagingAnimation } = useCart();
+  const { calculatePrice } = usePricing();
 
   const handleToggleWishlist = (id: number, e: React.MouseEvent) => {
     e.preventDefault();
@@ -19,11 +21,13 @@ export default function NewArrivals() {
 
   const handleAddToCart = (product: any, e: React.MouseEvent) => {
     e.preventDefault();
+    const finalPriceStr = product.newPrice ? `₹ ${product.newPrice}` : calculatePrice(product.weightInGrams || 0);
+    const numericPrice = parseFloat(finalPriceStr.replace(/[^\d.]/g, ''));
     triggerPackagingAnimation(
       {
         id: product.id.toString(),
         name: product.name,
-        price: product.newPrice,
+        price: finalPriceStr,
         image: product.image,
       } as any,
       'Standard'
@@ -49,8 +53,8 @@ export default function NewArrivals() {
             {/* Image Container */}
             <Link href={`/product/${product.id}`} className="aspect-square w-full relative bg-white flex items-center justify-center p-4 mb-4 rounded-xl border border-transparent hover:border-black/5 transition-colors block">
               <Image 
-                src={product.image} 
-                alt={product.name} 
+                src={product.image || '/images/Logoorg.png'} 
+                alt={product.name || 'Product'} 
                 fill 
                 className="object-contain p-4 hover:scale-105 transition-transform duration-500" 
                 sizes="(max-width: 768px) 50vw, 25vw"
@@ -82,8 +86,12 @@ export default function NewArrivals() {
               </div>
               
               <div className="flex items-center gap-2 mb-5">
-                <span className="text-xs text-gray-400 line-through font-light">₹ {product.oldPrice}</span>
-                <span className="text-sm font-bold text-black">₹ {product.newPrice}</span>
+                <span className="text-xs text-gray-400 line-through font-light">
+                  {product.oldPrice ? `₹ ${product.oldPrice}` : ''}
+                </span>
+                <span className="text-sm font-bold text-black">
+                  {product.newPrice ? `₹ ${product.newPrice}` : calculatePrice(product.weightInGrams || 0)}
+                </span>
               </div>
               
               <button 

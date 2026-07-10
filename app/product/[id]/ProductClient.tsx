@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { useProducts } from '../../../context/ProductsContext';
+import { usePricing } from '../../../components/PricingProvider';
 import { useWishlist } from '../../../context/WishlistContext';
 import { useCart } from '../../../context/CartContext';
 import SimilarProducts from '../../../components/SimilarProducts';
@@ -14,6 +15,7 @@ export default function ProductClient() {
   const { products } = useProducts();
   const product = products.find(p => String(p.id) === String(id));
   const { wishlist, toggleWishlist } = useWishlist();
+  const { calculatePrice } = usePricing();
   const { triggerPackagingAnimation } = useCart();
   
   const [selectedFinish, setSelectedFinish] = useState(0);
@@ -34,7 +36,7 @@ export default function ProductClient() {
   // Fallbacks for data structures that might not be present on all products
   const gallery = product.gallery && product.gallery.length > 0 
     ? product.gallery 
-    : [{ url: product.image, alt: product.name }];
+    : [{ url: product.image || '/images/Logoorg.png', alt: product.name }];
     
   const finishes = product.finishes || [];
   
@@ -61,7 +63,8 @@ export default function ProductClient() {
       name: product.name,
       category: 'Necklace',
       collection: 'New Arrivals',
-      price: `₹${product.newPrice}`,
+      price: product.newPrice ? `₹${product.newPrice}` : calculatePrice(product.weightInGrams || 0),
+      image: product.image || '/images/Logoorg.png',
       tagline: product.tagline || '',
       description: typeof product.description === 'string' ? product.description : (product.description?.design || ''),
       hallmark: product.hallmark || '',
@@ -98,7 +101,7 @@ export default function ProductClient() {
             <div className="aspect-[4/5] md:aspect-square relative bg-white rounded-2xl p-8 shadow-sm border border-gray-100 flex items-center justify-center">
               <Image 
                 src={gallery[activeImageIndex]?.url || gallery[0]?.url}
-                alt={gallery[activeImageIndex]?.alt || 'Product Image'}
+                alt={gallery[activeImageIndex]?.alt || product.name || 'Product Image'}
                 fill
                 className="object-contain p-8"
               />
@@ -136,7 +139,9 @@ export default function ProductClient() {
             <div className="flex justify-between items-start mb-6">
               <div>
                 <div className="flex items-end gap-3 mb-1">
-                  <span className="text-3xl font-bold">₹{product.newPrice || product.price?.replace('₹', '') || '0'}</span>
+                  <span className="text-3xl font-bold">
+                    {product.newPrice ? `₹${product.newPrice}` : calculatePrice(product.weightInGrams || 0)}
+                  </span>
                   {product.oldPrice && <span className="text-lg text-gray-400 line-through mb-1">₹{product.oldPrice}</span>}
                 </div>
                 <p className="text-[10px] text-gray-400 uppercase tracking-widest">MRP Incl. of all taxes</p>
