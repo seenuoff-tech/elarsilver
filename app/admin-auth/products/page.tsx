@@ -18,6 +18,42 @@ export default function ProductsManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   // Edit State
   const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, isGallery = false) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      const data = await res.json();
+      if (data.success) {
+        if (isGallery) {
+          const currentGallery = editingProduct?.gallery || [];
+          setEditingProduct({
+            ...editingProduct, 
+            gallery: [...currentGallery, { url: data.url, alt: editingProduct.name || 'Subimage' }]
+          });
+        } else {
+          setEditingProduct({...editingProduct, image: data.url});
+        }
+      } else {
+        alert('Upload failed: ' + data.error);
+      }
+    } catch (error) {
+      alert('Error uploading file');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const toggleSelectAll = () => {
     if (selectedProducts.length === products.length) {
@@ -414,29 +450,47 @@ export default function ProductsManagement() {
                   </select>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Main Image URL</label>
-                  <input 
-                    type="text" 
-                    value={editingProduct?.image || ''}
-                    onChange={(e) => editingProduct && setEditingProduct({...editingProduct, image: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none" 
-                    placeholder="e.g. /images/hero1.png or https://..." 
-                  />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Main Image</label>
+                  <div className="flex items-center gap-4">
+                    {editingProduct?.image && (
+                      <img src={editingProduct.image} alt="Preview" className="w-16 h-16 object-cover rounded-lg border border-gray-200" />
+                    )}
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      onChange={(e) => handleFileUpload(e, false)}
+                      disabled={isUploading}
+                      className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-[#0B5E64]/10 file:text-[#0B5E64] hover:file:bg-[#0B5E64]/20 cursor-pointer"
+                    />
+                  </div>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Sub Images (Comma separated URLs)</label>
-                  <textarea 
-                    value={editingProduct?.gallery?.map((g: any) => g.url).join(',\n') || ''}
-                    onChange={(e) => {
-                      if (!editingProduct) return;
-                      const urls = e.target.value.split(',').map(url => url.trim()).filter(url => url);
-                      const gallery = urls.map(url => ({ url, alt: editingProduct.name || 'Subimage' }));
-                      setEditingProduct({...editingProduct, gallery});
-                    }}
-                    rows={3}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0B5E64] focus:outline-none" 
-                    placeholder="https://image1.jpg,&#10;https://image2.jpg" 
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Sub Images (Gallery)</label>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {editingProduct?.gallery?.map((g: any, i: number) => (
+                      <div key={i} className="relative group">
+                        <img src={g.url} alt="Gallery" className="w-16 h-16 object-cover rounded-lg border border-gray-200" />
+                        <button 
+                          onClick={() => {
+                            const newGallery = [...editingProduct.gallery];
+                            newGallery.splice(i, 1);
+                            setEditingProduct({...editingProduct, gallery: newGallery});
+                          }}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={(e) => handleFileUpload(e, true)}
+                    disabled={isUploading}
+                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-[#0B5E64]/10 file:text-[#0B5E64] hover:file:bg-[#0B5E64]/20 cursor-pointer"
                   />
+                  {isUploading && <p className="text-xs text-gray-500 mt-2 animate-pulse">Uploading image...</p>}
                 </div>
                 <div className="md:col-span-2">
                   <label className="flex items-center gap-2 cursor-pointer">
