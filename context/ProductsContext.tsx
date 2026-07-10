@@ -35,39 +35,7 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Convert shopProducts to AppProduct format
-    const shopProductsConverted = shopProducts.map(sp => ({
-      id: sp.id,
-      name: sp.name,
-      image: `/images/${sp.id}.png`, // dummy image fallback
-      gallery: [],
-      rating: 4.8,
-      reviewsCount: 100,
-      oldPrice: parseInt(sp.price.replace(/[^0-9]/g, '')) + 1000,
-      newPrice: parseInt(sp.price.replace(/[^0-9]/g, '')),
-      isBestSeller: false,
-      material: '925 Sterling Silver',
-      finishes: [],
-      description: { inspiration: sp.description, design: '' },
-      tagline: sp.tagline,
-      weightInGrams: 5,
-      stock: 20,
-      status: 'Active',
-      category: sp.category
-    }));
-
-    const baseProducts = [
-      ...newArrivalsData, 
-      ...mensProducts
-    ].map(p => ({
-      ...p,
-      weightInGrams: Math.floor(Math.random() * 10) + 5,
-      stock: Math.floor(Math.random() * 50) + 5,
-      status: 'Active',
-      category: 'Jewellery'
-    } as AppProduct));
-
-    const allStaticProducts = [...baseProducts, ...shopProductsConverted];
+    const allStaticProducts: AppProduct[] = [];
 
     const saved = localStorage.getItem('elara_products');
     if (saved) {
