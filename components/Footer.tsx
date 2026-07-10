@@ -26,7 +26,7 @@ export default function Footer() {
         <div className="space-y-6">
           <div className="flex items-center gap-3">
             <img 
-              src="/images/Logoorg.PNG" 
+              src="/images/Logoorg.png" 
               alt="Elara Silver Logo" 
               className="w-auto h-40 md:h-48 object-contain brightness-0 invert drop-shadow-md" 
             />
