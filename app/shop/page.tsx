@@ -18,8 +18,8 @@ export default function ShopPage() {
   const [modalSize, setModalSize] = useState('US 7');
 
   // Group products by collection
-  const collections = Array.from(new Set(shopProducts.map((p) => p.collection)));
-  const flagshipProducts = shopProducts.filter((p, i) => i % 2 === 0);
+  const collections: string[] = [];
+  const flagshipProducts: ShopProduct[] = [];
 
   useEffect(() => {
     setMounted(true);
