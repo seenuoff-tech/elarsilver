@@ -70,24 +70,17 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
     const allStaticProducts = [...baseProducts, ...shopProductsConverted];
 
     const saved = localStorage.getItem('elara_products');
-    let loadedProducts: AppProduct[] = [];
     if (saved) {
       try {
-        loadedProducts = JSON.parse(saved);
+        setProducts(JSON.parse(saved));
+        setIsLoaded(true);
+        return;
       } catch (e) {
         console.error('Failed to parse saved products');
       }
     }
 
-    // Merge static products with loaded products to ensure no product is missing
-    const mergedProducts = [...loadedProducts];
-    allStaticProducts.forEach(sp => {
-      if (!mergedProducts.find(p => String(p.id) === String(sp.id))) {
-        mergedProducts.push(sp);
-      }
-    });
-
-    setProducts(mergedProducts);
+    setProducts(allStaticProducts);
     setIsLoaded(true);
   }, []);
 
