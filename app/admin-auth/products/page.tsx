@@ -15,6 +15,7 @@ export default function ProductsManagement() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
+  const [searchTerm, setSearchTerm] = useState('');
   // Edit State
   const [editingProduct, setEditingProduct] = useState<any>(null);
 
@@ -63,6 +64,11 @@ export default function ProductsManagement() {
     }
   };
 
+  const filteredProducts = products.filter(p => 
+    p.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    String(p.id).toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -92,6 +98,8 @@ export default function ProductsManagement() {
           <div className="relative w-full sm:w-64">
             <input 
               type="text" 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search products..." 
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0B5E64] focus:outline-none"
             />
@@ -145,7 +153,7 @@ export default function ProductsManagement() {
               </tr>
             </thead>
             <tbody>
-              {products.map((product) => (
+              {filteredProducts.map((product) => (
                 <tr key={product.id} className={`border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors ${selectedProducts.includes(String(product.id)) ? 'bg-gray-50/50' : ''}`}>
                   <td className="p-4">
                     <input 
@@ -194,7 +202,7 @@ export default function ProductsManagement() {
                   </td>
                 </tr>
               ))}
-              {products.length === 0 && (
+              {filteredProducts.length === 0 && (
                 <tr>
                   <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
                     No products found. Add a new product to get started.
