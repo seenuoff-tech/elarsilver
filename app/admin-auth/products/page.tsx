@@ -21,35 +21,42 @@ export default function ProductsManagement() {
   const [isUploading, setIsUploading] = useState(false);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, isGallery = false) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
     setIsUploading(true);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
+      const newUrls: string[] = [];
       
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      
-      const data = await res.json();
-      if (data.success) {
-        if (isGallery) {
-          const currentGallery = editingProduct?.gallery || [];
-          setEditingProduct({
-            ...editingProduct, 
-            gallery: [...currentGallery, { url: data.url, alt: editingProduct.name || 'Subimage' }]
-          });
+      for (let i = 0; i < files.length; i++) {
+        const formData = new FormData();
+        formData.append('file', files[i]);
+        
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        const data = await res.json();
+        if (data.success) {
+          newUrls.push(data.url);
         } else {
-          setEditingProduct({...editingProduct, image: data.url});
+          alert('Upload failed for ' + files[i].name + ': ' + data.error);
         }
-      } else {
-        alert('Upload failed: ' + data.error);
+      }
+
+      if (isGallery) {
+        const currentGallery = editingProduct?.gallery || [];
+        const newGalleryItems = newUrls.map(url => ({ url, alt: editingProduct.name || 'Subimage' }));
+        setEditingProduct({
+          ...editingProduct, 
+          gallery: [...currentGallery, ...newGalleryItems]
+        });
+      } else if (newUrls.length > 0) {
+        setEditingProduct({...editingProduct, image: newUrls[0]});
       }
     } catch (error) {
-      alert('Error uploading file');
+      alert('Error uploading files');
     } finally {
       setIsUploading(false);
     }
@@ -486,6 +493,7 @@ export default function ProductsManagement() {
                   <input 
                     type="file" 
                     accept="image/*"
+                    multiple
                     onChange={(e) => handleFileUpload(e, true)}
                     disabled={isUploading}
                     className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-[#0B5E64]/10 file:text-[#0B5E64] hover:file:bg-[#0B5E64]/20 cursor-pointer"
