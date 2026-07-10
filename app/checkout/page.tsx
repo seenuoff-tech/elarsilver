@@ -25,6 +25,7 @@ export default function CheckoutPage() {
     address: '',
     city: '',
     pincode: '',
+    gstNumber: '',
   });
 
   const [paymentData, setPaymentData] = useState({
@@ -186,6 +187,11 @@ export default function CheckoutPage() {
     doc.text(`Phone: ${formData.phone}`, 14, currentY);
     currentY += 5;
     doc.text(`Email: ${formData.email}`, 14, currentY);
+    
+    if (formData.gstNumber && formData.gstNumber.trim() !== '') {
+      currentY += 5;
+      doc.text(`Customer GST: ${formData.gstNumber.toUpperCase()}`, 14, currentY);
+    }
     
     // Table
     const tableColumn = ["Item", "Size", "Qty", "Price", "Total"];
@@ -381,6 +387,11 @@ export default function CheckoutPage() {
                       <label className="text-[10px] tracking-widest uppercase text-black/60 font-semibold">Pincode *</label>
                       <input required type="text" name="pincode" value={formData.pincode} onChange={handleInputChange} className="w-full bg-[#F5F5F7] border border-transparent focus:border-[#0B5E64] p-4 text-sm outline-none transition-colors" placeholder="e.g. 400001" />
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] tracking-widest uppercase text-black/60 font-semibold">GST Number (Optional) - For B2B Invoice</label>
+                    <input type="text" name="gstNumber" value={formData.gstNumber || ''} onChange={handleInputChange} className="w-full bg-[#F5F5F7] border border-transparent focus:border-[#0B5E64] p-4 text-sm outline-none transition-colors uppercase" placeholder="e.g. 29GGGGG1314R9Z6" maxLength={15} />
                   </div>
 
                   <div className="pt-6">
