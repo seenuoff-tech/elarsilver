@@ -305,7 +305,7 @@ export default function ProductsManagement() {
               </div>
               <div className="text-xs text-left text-gray-500 pt-4">
                 <a 
-                  href="data:text/csv;charset=utf-8,id,name,category,weightInGrams,stock,status%0APRD-NEW,Sample%20Silver%20Ring,Rings,5.5,10,Active" 
+                  href="data:text/csv;charset=utf-8,id,name,category,weightInGrams,stock,status,image,gallery%0APRD-NEW,Sample%20Silver%20Ring,Rings,5.5,10,Active,ring1.jpg,ring1_side.jpg|ring1_back.jpg" 
                   download="elara_products_template.csv" 
                   className="text-[#0B5E64] hover:underline"
                 >
@@ -334,14 +334,29 @@ export default function ProductsManagement() {
                         
                         // Skip header row (index 0)
                         const newProducts = lines.slice(1).map(line => {
-                          const [id, name, category, weightInGrams, stock, status] = line.split(',');
+                          const [id, name, category, weightInGrams, stock, status, image, galleryStr] = line.split(',');
+                          
+                          // Process main image
+                          const mainImage = image?.trim() ? `/images/${image.trim()}` : '';
+                          
+                          // Process gallery (sub images separated by '|')
+                          let gallery: any[] = [];
+                          if (galleryStr?.trim()) {
+                            gallery = galleryStr.split('|').map(img => ({
+                              url: `/images/${img.trim()}`,
+                              alt: name?.trim() || 'Subimage'
+                            }));
+                          }
+
                           return {
                             id: `PRD-${Math.random().toString(36).substr(2, 5)}`.toUpperCase(),
                             name: name?.trim() || 'Unknown Product',
                             category: category?.trim() || 'Uncategorized',
                             weightInGrams: parseFloat(weightInGrams) || 0,
                             stock: parseInt(stock) || 0,
-                            status: status?.trim() || 'Draft'
+                            status: status?.trim() || 'Draft',
+                            image: mainImage,
+                            gallery: gallery
                           };
                         });
                         
