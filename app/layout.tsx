@@ -25,6 +25,7 @@ export const metadata: Metadata = {
 import { AuthProvider } from '../context/AuthContext';
 
 import { ProductsProvider } from '../context/ProductsContext';
+import { PricingProvider } from '../components/PricingProvider';
 
 export default function RootLayout({
   children,
@@ -35,13 +36,15 @@ export default function RootLayout({
     <html lang="en" className={`${outfit.variable} light`} suppressHydrationWarning>
       <body className={`${outfit.className} bg-[#ffffff] text-black overflow-x-hidden antialiased`} suppressHydrationWarning>
         <AuthProvider>
-          <ProductsProvider>
-            <WishlistProvider>
-              <CartProvider>
-                <ClientLayout>{children}</ClientLayout>
-              </CartProvider>
-            </WishlistProvider>
-          </ProductsProvider>
+          <PricingProvider>
+            <ProductsProvider>
+              <WishlistProvider>
+                <CartProvider>
+                  <ClientLayout>{children}</ClientLayout>
+                </CartProvider>
+              </WishlistProvider>
+            </ProductsProvider>
+          </PricingProvider>
         </AuthProvider>
       </body>
     </html>
