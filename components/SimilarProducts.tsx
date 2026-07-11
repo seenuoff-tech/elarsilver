@@ -36,20 +36,28 @@ export default function SimilarProducts({ currentProductId }: SimilarProductsPro
 
   // Filter out the current product and grab up to 4 similar items
   const similarProducts = products.filter(p => Number(p.id) !== currentProductId).slice(0, 4);
+  const displayProducts = products.filter(p => Number(p.id) !== currentProductId).slice(0, 4);
 
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 mt-24 border-t border-gray-200 pt-16">
       <h2 className="text-xl text-black mb-8">Recently Viewed</h2>
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {similarProducts.map((product) => (
+        {displayProducts.map((product, index) => (
           <div key={product.id} className="relative flex flex-col group">
             {/* Best Seller Ribbon */}
             {product.isBestSeller && (
-              <div className="absolute top-0 left-0 z-10 overflow-hidden w-[80px] h-[80px]">
-                <div className="absolute top-3 -left-7 w-[100px] -rotate-45 bg-[#d4af37] text-black text-[8px] font-bold py-1 text-center shadow-md uppercase tracking-wider">
-                  Best Seller
+              <div className="absolute top-4 -left-2 z-20 flex flex-col items-start">
+                <div 
+                  className="bg-[#0B5E64] text-white text-[10px] md:text-xs font-semibold py-1 pl-3 pr-5 shadow-sm" 
+                  style={{ clipPath: 'polygon(0 0, 100% 0, 85% 50%, 100% 100%, 0 100%)' }}
+                >
+                  Bestseller
                 </div>
+                <div 
+                  className="w-2 h-2 bg-[#07474B]" 
+                  style={{ clipPath: 'polygon(100% 0, 100% 100%, 0 0)' }} 
+                />
               </div>
             )}
             
@@ -63,10 +71,18 @@ export default function SimilarProducts({ currentProductId }: SimilarProductsPro
                 sizes="(max-width: 768px) 50vw, 25vw"
               />
               
+              {/* Rating Badge */}
+              <div className="absolute bottom-2 left-2 z-20 bg-gray-100/90 text-gray-700 text-[10px] font-medium px-2 py-1 rounded flex items-center gap-1 shadow-sm backdrop-blur-sm pointer-events-none">
+                <span>4.8</span>
+                <span className="text-[#f59e0b] text-[10px] leading-none mb-0.5">★</span>
+                <span className="text-gray-400 mx-0.5">|</span>
+                <span>{300 + ((index * 47) % 200)}</span>
+              </div>
+              
               {/* Wishlist Button */}
               <button 
                 onClick={(e) => handleToggleWishlist(product.id, e)}
-                className="absolute top-3 right-3 z-20 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform"
+                className="absolute top-3 right-3 z-20 w-8 h-8 flex items-center justify-center hover:scale-110 transition-transform"
                 aria-label="Add to wishlist"
               >
                 {wishlist.includes(product.id) ? (
@@ -82,16 +98,12 @@ export default function SimilarProducts({ currentProductId }: SimilarProductsPro
             </Link>
             
             {/* Details */}
-            <div className="flex flex-col flex-grow px-1">
-              <div className="flex items-center gap-1 mb-2">
-                <span className="text-xs font-semibold text-gray-800 bg-white shadow-sm border border-black/5 px-2 py-0.5 rounded-full flex items-center gap-1">
-                  {product.rating} <span className="text-amber-400 text-[10px]">★</span> | {product.reviewsCount}
-                </span>
-              </div>
-              
+            <div className="flex flex-col flex-grow px-1 mt-2">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-sm font-bold text-black">₹{product.newPrice}</span>
-                <span className="text-xs text-gray-400 line-through font-light">₹{product.oldPrice}</span>
+                <span className="text-sm font-bold text-black">
+                  {product.newPrice ? `₹${product.newPrice}` : (product.price ? product.price : calculatePrice(product.weightInGrams || 0, product.category))}
+                </span>
+                {product.oldPrice && <span className="text-xs text-gray-400 line-through font-light">₹{product.oldPrice}</span>}
               </div>
               
               <p className="text-xs text-gray-600 truncate mb-1">{product.name}</p>

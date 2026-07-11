@@ -37,7 +37,7 @@ const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section className="py-24 bg-[#FAFAFA] overflow-hidden relative z-10 border-t border-black/5">
+    <section className="pt-8 md:pt-24 pb-12 md:pb-24 bg-[#FAFAFA] overflow-hidden relative z-10 border-t border-black/5">
       <div className="text-center mb-16">
         <span className="text-sm font-serif text-[#0B5E64] block mb-2">Our</span>
         <h2 className="text-4xl md:text-5xl font-medium text-[#0B5E64]">Testimonials</h2>

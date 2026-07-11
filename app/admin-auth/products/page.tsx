@@ -217,7 +217,7 @@ export default function ProductsManagement() {
                   </td>
                   <td className="px-6 py-4 text-gray-600">{product.category}</td>
                   <td className="px-6 py-4 text-gray-600">{product.weightInGrams}g</td>
-                  <td className="px-6 py-4 font-medium text-[#0B5E64]">{calculatePrice(product.weightInGrams)}</td>
+                  <td className="px-6 py-4 font-medium text-[#0B5E64]">{calculatePrice(product.weightInGrams, product.category)}</td>
                   <td className="px-6 py-4">
                     <span className={`font-medium ${product.stock === 0 ? 'text-red-600' : 'text-gray-900'}`}>{product.stock}</span>
                   </td>
@@ -445,7 +445,7 @@ export default function ProductsManagement() {
                   </div>
                   {editingProduct && (
                     <p className="text-xs text-[#0B5E64] mt-1 font-medium">
-                      Calculated Price: {calculatePrice(editingProduct.weightInGrams)}
+                      Calculated Price: {calculatePrice(editingProduct.weightInGrams, editingProduct.category)}
                     </p>
                   )}
                 </div>

@@ -77,13 +77,7 @@ export default function CartDrawer() {
               {/* Header */}
               <div className="p-6 border-b border-black/10 flex items-center justify-between bg-[#ffffff]/40">
                 <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5 text-silver-chrome" viewBox="0 0 100 100" fill="none">
-                    <path
-                      d="M50 5L63 38L96 50L63 62L50 95L37 62L4 50L37 38L50 5Z"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                    />
-                  </svg>
+
                   <h3 className="text-sm font-semibold tracking-[0.25em] uppercase text-black">
                     Your Collection
                   </h3>

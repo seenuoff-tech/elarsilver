@@ -10,6 +10,7 @@ export default function OrdersManagement() {
     { id: 'ORD-1020', customer: 'Sneha Reddy', email: 'sneha@example.com', date: 'Oct 21, 2026', total: '₹8,900', status: 'Cancelled' },
     { id: 'ORD-1019', customer: 'Vikram Singh', email: 'vikram@example.com', date: 'Oct 20, 2026', total: '₹5,500', status: 'Pending' },
   ]);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
   const handleStatusChange = (orderId: string, newStatus: string) => {
     setOrders(orders.map(order => 
@@ -81,7 +82,12 @@ export default function OrdersManagement() {
                     </select>
                   </td>
                   <td className="px-6 py-4 text-right space-x-3">
-                    <button className="text-[#0B5E64] hover:underline font-medium">View Details</button>
+                    <button 
+                      onClick={() => setSelectedOrder(order)}
+                      className="text-[#0B5E64] hover:underline font-medium"
+                    >
+                      View Details
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -96,6 +102,62 @@ export default function OrdersManagement() {
           </div>
         </div>
       </div>
+
+      {/* Order Details Modal */}
+      {selectedOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Order Details</h3>
+                <p className="text-sm text-gray-500">{selectedOrder.id}</p>
+              </div>
+              <button 
+                onClick={() => setSelectedOrder(null)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-6 space-y-6 text-sm">
+              <div className="flex justify-between">
+                <div>
+                  <p className="text-gray-500">Customer</p>
+                  <p className="font-medium text-gray-900">{selectedOrder.customer}</p>
+                  <p className="text-gray-500">{selectedOrder.email}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-gray-500">Date</p>
+                  <p className="font-medium text-gray-900">{selectedOrder.date}</p>
+                  <p className="mt-2 text-gray-500">Status</p>
+                  <p className="font-medium text-[#0B5E64]">{selectedOrder.status}</p>
+                </div>
+              </div>
+              <div className="border-t border-gray-100 pt-4">
+                <h4 className="font-medium text-gray-900 mb-3">Items</h4>
+                <div className="flex justify-between mb-2">
+                  <span className="text-gray-600">Sample Ring (US 7) x 1</span>
+                  <span className="font-medium">{selectedOrder.total}</span>
+                </div>
+                <div className="flex justify-between pt-3 border-t border-gray-50 mt-4 text-base font-bold">
+                  <span>Total</span>
+                  <span className="text-[#0B5E64]">{selectedOrder.total}</span>
+                </div>
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end">
+              <button 
+                onClick={() => setSelectedOrder(null)}
+                className="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

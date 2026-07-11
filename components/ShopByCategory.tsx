@@ -62,7 +62,7 @@ export default function ShopByCategory() {
   };
 
   return (
-    <section className="py-20 px-6 md:px-12 bg-white max-w-7xl mx-auto z-10 relative">
+    <section className="pt-8 pb-20 px-6 md:px-12 bg-white max-w-7xl mx-auto z-10 relative">
       <div className="flex flex-col items-center text-center mb-12 gap-6">
         <div className="space-y-4">
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight uppercase text-black">

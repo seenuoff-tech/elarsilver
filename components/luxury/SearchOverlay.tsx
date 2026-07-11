@@ -3,7 +3,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
 import gsap from 'gsap';
-import { shopProducts, ShopProduct } from '../../data/shopProducts';
+import { useProducts } from '../../context/ProductsContext';
 import LuxuryButton from './LuxuryButton';
 
 interface SearchOverlayProps {
@@ -21,16 +21,15 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [query, setQuery] = useState('');
+  const { products } = useProducts();
 
   // Filter products based on search term
   const filteredProducts = query.trim() === ''
     ? []
-    : shopProducts.filter(p =>
+    : products.filter(p =>
         p.name.toLowerCase().includes(query.toLowerCase()) ||
-        p.collection.toLowerCase().includes(query.toLowerCase()) ||
-        p.tagline.toLowerCase().includes(query.toLowerCase()) ||
-        p.category.toLowerCase().includes(query.toLowerCase())
-      ).slice(0, 4);
+        (p.category && p.category.toLowerCase().includes(query.toLowerCase()))
+      ).slice(0, 5);
 
   // Trigger search transitions on open/close
   useEffect(() => {

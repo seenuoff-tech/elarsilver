@@ -9,6 +9,19 @@ export default function InvoicesPage() {
     { id: 'INV-2026-003', orderId: 'ORD-1021', customer: 'Arun Kumar', date: 'Oct 22, 2026', amount: '₹3,200', status: 'Paid' },
     { id: 'INV-2026-004', orderId: 'ORD-1020', customer: 'Sneha Reddy', date: 'Oct 21, 2026', amount: '₹8,900', status: 'Refunded' },
   ]);
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+
+  const handleDownloadPdf = (invoice: any) => {
+    // In a real app, this would generate and trigger a PDF download.
+    // Here we'll simulate the download flow.
+    const element = document.createElement('a');
+    const file = new Blob([`Invoice ${invoice.id}\nCustomer: ${invoice.customer}\nAmount: ${invoice.amount}`], {type: 'text/plain'});
+    element.href = URL.createObjectURL(file);
+    element.download = `${invoice.id}.txt`; // using txt as a mock for PDF
+    document.body.appendChild(element); // Required for this to work in FireFox
+    element.click();
+    document.body.removeChild(element);
+  };
 
   return (
     <div className="space-y-6">
@@ -61,14 +74,20 @@ export default function InvoicesPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right flex items-center justify-end gap-3">
-                    <button className="text-gray-500 hover:text-gray-900 flex items-center gap-1 transition-colors">
+                    <button 
+                      onClick={() => setSelectedInvoice(invoice)} 
+                      className="text-gray-500 hover:text-gray-900 flex items-center gap-1 transition-colors"
+                    >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
                       Preview
                     </button>
-                    <button className="text-[#0B5E64] hover:text-[#084A4F] flex items-center gap-1 transition-colors font-medium">
+                    <button 
+                      onClick={() => handleDownloadPdf(invoice)} 
+                      className="text-[#0B5E64] hover:text-[#084A4F] flex items-center gap-1 transition-colors font-medium"
+                    >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                       </svg>
@@ -81,6 +100,104 @@ export default function InvoicesPage() {
           </table>
         </div>
       </div>
+
+      {/* Invoice Preview Modal */}
+      {selectedInvoice && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+              <h3 className="text-lg font-bold text-gray-900">Invoice Preview</h3>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => handleDownloadPdf(selectedInvoice)}
+                  className="px-3 py-1.5 bg-[#0B5E64] text-white text-xs font-medium rounded hover:bg-[#084A4F] transition-colors flex items-center gap-1"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Download PDF
+                </button>
+                <button 
+                  onClick={() => setSelectedInvoice(null)}
+                  className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors rounded-full hover:bg-gray-200"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <div className="p-8 text-sm max-h-[70vh] overflow-y-auto" id="invoice-printable-area">
+              <div className="flex justify-between items-start mb-8">
+                <div>
+                  <h1 className="text-2xl font-bold tracking-widest uppercase text-[#0B5E64] mb-1">ELARA</h1>
+                  <p className="text-gray-500 text-xs">Fine Silver Jewellery</p>
+                </div>
+                <div className="text-right">
+                  <h2 className="text-xl font-medium text-gray-800 mb-1">INVOICE</h2>
+                  <p className="text-gray-500">{selectedInvoice.id}</p>
+                </div>
+              </div>
+              
+              <div className="flex justify-between mb-8 border-b border-gray-100 pb-8">
+                <div>
+                  <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2">Billed To</p>
+                  <p className="font-medium text-gray-900">{selectedInvoice.customer}</p>
+                  <p className="text-gray-500 mt-1">Order: {selectedInvoice.orderId}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2">Invoice Date</p>
+                  <p className="font-medium text-gray-900">{selectedInvoice.date}</p>
+                  <p className="mt-4 text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">Status</p>
+                  <p className={`font-medium ${selectedInvoice.status === 'Paid' ? 'text-green-600' : 'text-red-600'}`}>
+                    {selectedInvoice.status}
+                  </p>
+                </div>
+              </div>
+              
+              <table className="w-full text-left mb-8">
+                <thead className="text-xs text-gray-500 uppercase border-b border-gray-200">
+                  <tr>
+                    <th className="py-2 font-medium">Description</th>
+                    <th className="py-2 font-medium text-center">Qty</th>
+                    <th className="py-2 font-medium text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody className="border-b border-gray-100">
+                  <tr>
+                    <td className="py-4 text-gray-800">Jewellery Items (Order {selectedInvoice.orderId})</td>
+                    <td className="py-4 text-gray-600 text-center">1</td>
+                    <td className="py-4 text-gray-800 text-right font-medium">{selectedInvoice.amount}</td>
+                  </tr>
+                </tbody>
+              </table>
+              
+              <div className="flex justify-end">
+                <div className="w-64 space-y-2">
+                  <div className="flex justify-between text-gray-500">
+                    <span>Subtotal</span>
+                    <span>{selectedInvoice.amount}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-500">
+                    <span>Tax (GST)</span>
+                    <span>Included</span>
+                  </div>
+                  <div className="flex justify-between text-base font-bold text-[#0B5E64] pt-2 border-t border-gray-200 mt-2">
+                    <span>Total</span>
+                    <span>{selectedInvoice.amount}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-12 pt-8 border-t border-gray-100 text-center text-gray-400 text-xs">
+                <p>Thank you for choosing Elara Silver.</p>
+                <p className="mt-1">If you have any questions about this invoice, please contact support@elarasilver.com</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

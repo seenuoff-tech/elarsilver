@@ -66,8 +66,8 @@ export default function Footer() {
             <Link href="/shop?category=anklets" className="hover:text-white transition-colors duration-300">Anklets</Link>
             <Link href="/shop?category=chains" className="hover:text-white transition-colors duration-300">Chains</Link>
             <Link href="/shop?category=toe-rings" className="hover:text-white transition-colors duration-300">Toe Rings</Link>
-            <Link href="/shop?category=mens-rings" className="hover:text-white transition-colors duration-300 font-medium pt-2">Men's Category</Link>
-            <Link href="/shop?category=kids-earings" className="hover:text-white transition-colors duration-300 font-medium">Kids Category</Link>
+            <Link href="/shop?category=mens-rings" className="hover:text-white transition-colors duration-300 font-medium pt-2">Men's Jewellery</Link>
+            <Link href="/shop?category=kids-earings" className="hover:text-white transition-colors duration-300 font-medium">Kids Jewellery</Link>
           </div>
         </div>
 

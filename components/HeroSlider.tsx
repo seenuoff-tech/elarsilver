@@ -88,8 +88,8 @@ export default function HeroSlider() {
 
   return (
     <div 
-      className="relative w-full overflow-hidden flex items-center justify-center"
-      style={{ minHeight: '80vh', backgroundColor: '#ffffff', marginTop: '240px', marginBottom: '40px' }}
+      className="relative w-full overflow-hidden flex items-center justify-center mt-28 md:mt-[240px]"
+      style={{ height: '530px', backgroundColor: '#ffffff', marginBottom: '40px' }}
     >
       {slides.map((slide, index) => {
         const position = getPosition(index);
@@ -101,8 +101,8 @@ export default function HeroSlider() {
             initial="hidden"
             animate={position}
             transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
-            className="absolute rounded-[2.5rem] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-black/5"
-            style={{ width: '75%', height: '85%', maxWidth: '1200px' }}
+            className="absolute rounded-[1rem] md:rounded-[2.5rem] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-black/5"
+            style={{ width: '95%', maxWidth: '1187px', height: '100%', maxHeight: '530px' }}
           >
             <div 
               className="absolute inset-0 bg-cover bg-center"

@@ -63,7 +63,7 @@ export default function ProductClient() {
       name: product.name,
       category: 'Necklace',
       collection: 'New Arrivals',
-      price: product.newPrice ? `₹${product.newPrice}` : calculatePrice(product.weightInGrams || 0),
+      price: product.newPrice ? `₹${product.newPrice}` : calculatePrice(product.weightInGrams || 0, product.category),
       image: product.image || '/images/Logoorg.png',
       tagline: product.tagline || '',
       description: typeof product.description === 'string' ? product.description : (product.description?.design || ''),
@@ -82,7 +82,7 @@ export default function ProductClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] pt-24 pb-12">
+    <div className="min-h-screen bg-[#fafafa] pt-32 md:pt-48 pb-12">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         
         {/* Breadcrumb (Optional, basic implementation) */}
@@ -138,9 +138,12 @@ export default function ProductClient() {
             
             <div className="flex justify-between items-start mb-6">
               <div>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
                 <div className="flex items-end gap-3 mb-1">
-                  <span className="text-3xl font-bold">
-                    {product.newPrice ? `₹${product.newPrice}` : calculatePrice(product.weightInGrams || 0)}
+                  <span className="text-3xl font-bold text-[#0B5E64]">
+                    {product.newPrice 
+                      ? `₹${product.newPrice}` 
+                      : (product.price ? product.price : calculatePrice(product.weightInGrams || 0, product.category))}
                   </span>
                   {product.oldPrice && <span className="text-lg text-gray-400 line-through mb-1">₹{product.oldPrice}</span>}
                 </div>
@@ -209,9 +212,12 @@ export default function ProductClient() {
               </div>
 
 
+            </div>
 
+            {/* Action Area (Sticky on mobile, inline on desktop) */}
+            <div className="fixed bottom-0 left-0 w-full bg-white p-4 border-t border-gray-200 z-50 md:static md:bg-transparent md:p-0 md:border-0 md:z-auto shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.1)] md:shadow-none mb-0 md:mb-12">
               {/* Gift Wrap */}
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-3">
                 <input 
                   type="checkbox" 
                   id="giftWrap" 
@@ -220,18 +226,24 @@ export default function ProductClient() {
                   className="w-4 h-4 text-[#0B5E64] focus:ring-[#0B5E64] border-gray-300 rounded"
                 />
                 <label htmlFor="giftWrap" className="text-sm text-gray-700">
-                  Is this a <span className="text-[#f6899b] font-semibold">Gift?</span> 🎁 Wrap it for Just (₹ 50)
+                  Is this a <span className="text-[#0B5E64] font-semibold">Gift?</span> 🎁 Wrap it for just (₹50)
                 </label>
               </div>
-            </div>
 
-            {/* Action Area (Add to Cart logic etc, simplified for now since cart animates from card) */}
-            <button 
-              onClick={handleAddToCart}
-              className="w-full py-4 bg-[#0B5E64] text-white font-bold tracking-widest uppercase rounded-xl shadow-lg hover:bg-[#08494E] transition-colors mb-12"
-            >
-              Add to Cart
-            </button>
+              <div className="flex gap-3">
+                <button 
+                  className="flex-1 py-3 bg-white border border-[#0B5E64] text-[#0B5E64] font-bold tracking-widest uppercase rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Buy Now
+                </button>
+                <button 
+                  onClick={handleAddToCart}
+                  className="flex-1 py-3 bg-[#0B5E64] text-white font-bold tracking-widest uppercase rounded-lg shadow-md hover:bg-[#08494E] transition-colors"
+                >
+                  Add to Cart
+                </button>
+              </div>
+            </div>
 
             {/* Product Description Expandable */}
             <div className="mb-12 bg-[#fafafa]">

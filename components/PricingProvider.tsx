@@ -1,24 +1,72 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+
+const defaultRates: Record<string, number> = {
+  'Rings': 85,
+  'Necklace': 85,
+  'Bracelet': 85,
+  'Earings': 85,
+  'Anklets': 85,
+  'Chains': 85,
+  'Toe rings': 85,
+  'Mens-Rings': 85,
+  'Mens-Chains': 85,
+  'Mens-Bracelet': 85,
+  'Kids-Earings': 85,
+};
 
 interface PricingContextType {
-  silverRate: number;
-  setSilverRate: (rate: number) => void;
+  silverRates: Record<string, number>;
+  updateCategoryRate: (category: string, rate: number) => void;
   gstPercentage: number;
   setGstPercentage: (gst: number) => void;
-  calculatePrice: (weightInGrams: number) => string;
+  calculatePrice: (weightInGrams: number, category?: string) => string;
 }
 
 const PricingContext = createContext<PricingContextType | undefined>(undefined);
 
 export function PricingProvider({ children }: { children: ReactNode }) {
-  const [silverRate, setSilverRate] = useState<number>(85); // Default to ₹85/g
+  const [silverRates, setSilverRates] = useState<Record<string, number>>(defaultRates);
   const [gstPercentage, setGstPercentage] = useState<number>(3); // Default to 3% GST
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  // Helper to instantly calculate price based on weight
-  const calculatePrice = (weightInGrams: number) => {
-    const basePrice = weightInGrams * silverRate;
+  // Load from local storage
+  useEffect(() => {
+    const savedRates = localStorage.getItem('elara_silver_rates');
+    const savedGst = localStorage.getItem('elara_gst');
+    if (savedRates) {
+      try {
+        setSilverRates(JSON.parse(savedRates));
+      } catch (e) {
+        console.error('Failed to parse saved silver rates');
+      }
+    }
+    if (savedGst) {
+      setGstPercentage(parseFloat(savedGst));
+    }
+    setIsLoaded(true);
+  }, []);
+
+  // Save to local storage
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem('elara_silver_rates', JSON.stringify(silverRates));
+      localStorage.setItem('elara_gst', gstPercentage.toString());
+    }
+  }, [silverRates, gstPercentage, isLoaded]);
+
+  const updateCategoryRate = (category: string, rate: number) => {
+    setSilverRates(prev => ({
+      ...prev,
+      [category]: rate
+    }));
+  };
+
+  // Helper to instantly calculate price based on weight and category
+  const calculatePrice = (weightInGrams: number, category: string = '') => {
+    const rate = silverRates[category] || 85; // Fallback to 85 if category not found
+    const basePrice = weightInGrams * rate;
     const finalPrice = basePrice + (basePrice * (gstPercentage / 100));
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -28,7 +76,7 @@ export function PricingProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <PricingContext.Provider value={{ silverRate, setSilverRate, gstPercentage, setGstPercentage, calculatePrice }}>
+    <PricingContext.Provider value={{ silverRates, updateCategoryRate, gstPercentage, setGstPercentage, calculatePrice }}>
       {children}
     </PricingContext.Provider>
   );

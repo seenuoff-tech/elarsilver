@@ -277,9 +277,6 @@ export default function AddToCartAnimation() {
           {step === 4 && 'Wrapping in Silver Ribbon & Bow...'}
           {step === 5 && 'Securing Package into Shopping Bag...'}
         </motion.p>
-        <p className="text-[10px] tracking-[0.4em] uppercase text-black/30">
-          ELARA Private Concierge
-        </p>
       </div>
     </div>
   );

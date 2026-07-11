@@ -21,7 +21,7 @@ export default function NewArrivals() {
 
   const handleAddToCart = (product: any, e: React.MouseEvent) => {
     e.preventDefault();
-    const finalPriceStr = product.newPrice ? `₹ ${product.newPrice}` : calculatePrice(product.weightInGrams || 0);
+    const finalPriceStr = product.newPrice ? `₹ ${product.newPrice}` : calculatePrice(product.weightInGrams || 0, product.category);
     const numericPrice = parseFloat(finalPriceStr.replace(/[^\d.]/g, ''));
     triggerPackagingAnimation(
       {
@@ -35,18 +35,25 @@ export default function NewArrivals() {
   };
 
   return (
-    <section className="py-20 px-6 md:px-12 bg-white max-w-7xl mx-auto z-10 relative border-t border-black/5">
-      <h2 className="text-2xl md:text-3xl font-medium mb-12 text-left text-black">New arrivals</h2>
+    <section className="pt-2 md:pt-20 pb-6 md:pb-20 px-6 md:px-12 bg-white max-w-7xl mx-auto z-10 relative border-t border-black/5">
+      <h2 className="text-2xl md:text-3xl font-medium mb-6 md:mb-12 text-left text-black">New arrivals</h2>
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {products.map((product) => (
+        {products.map((product, index) => (
           <div key={product.id} className="relative flex flex-col group">
             {/* Best Seller Ribbon */}
             {product.isBestSeller && (
-              <div className="absolute top-0 left-0 z-10 overflow-hidden w-[80px] h-[80px]">
-                <div className="absolute top-3 -left-7 w-[100px] -rotate-45 bg-[#d4af37] text-black text-[8px] font-bold py-1 text-center shadow-md uppercase tracking-wider">
-                  Best Seller
+              <div className="absolute top-4 -left-2 z-20 flex flex-col items-start">
+                <div 
+                  className="bg-[#0B5E64] text-white text-[10px] md:text-xs font-semibold py-1 pl-3 pr-5 shadow-sm" 
+                  style={{ clipPath: 'polygon(0 0, 100% 0, 85% 50%, 100% 100%, 0 100%)' }}
+                >
+                  Bestseller
                 </div>
+                <div 
+                  className="w-2 h-2 bg-[#07474B]" 
+                  style={{ clipPath: 'polygon(100% 0, 100% 100%, 0 0)' }} 
+                />
               </div>
             )}
             
@@ -60,10 +67,18 @@ export default function NewArrivals() {
                 sizes="(max-width: 768px) 50vw, 25vw"
               />
               
+              {/* Rating Badge */}
+              <div className="absolute bottom-2 left-2 z-20 bg-gray-100/90 text-gray-700 text-[10px] font-medium px-2 py-1 rounded flex items-center gap-1 shadow-sm backdrop-blur-sm pointer-events-none">
+                <span>4.8</span>
+                <span className="text-[#f59e0b] text-[10px] leading-none mb-0.5">★</span>
+                <span className="text-gray-400 mx-0.5">|</span>
+                <span>{300 + ((index * 47) % 200)}</span>
+              </div>
+              
               {/* Wishlist Button */}
               <button 
                 onClick={(e) => handleToggleWishlist(product.id, e)}
-                className="absolute top-3 right-3 z-20 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform"
+                className="absolute top-3 right-3 z-20 w-8 h-8 flex items-center justify-center hover:scale-110 transition-transform"
                 aria-label="Add to wishlist"
               >
                 {wishlist.includes(product.id) ? (
@@ -79,24 +94,18 @@ export default function NewArrivals() {
             </Link>
             
             {/* Details */}
-            <div className="flex flex-col flex-grow px-1">
+            <div className="flex flex-col flex-grow px-2 mt-2">
               <Link href={`/product/${product.id}`} className="hover:underline">
                 <h3 className="text-sm font-medium text-gray-900 line-clamp-1 mb-1" title={product.name}>
                   {product.name}
                 </h3>
               </Link>
-              <div className="flex items-center gap-1 mb-2">
-                <span className="text-sm font-semibold text-gray-800">{product.rating}</span>
-                <span className="text-amber-400 text-sm">★</span>
-              </div>
               
               <div className="flex items-center gap-2 mb-5">
-                <span className="text-xs text-gray-400 line-through font-light">
-                  {product.oldPrice ? `₹ ${product.oldPrice}` : ''}
+                <span className="text-[15px] font-bold text-black">
+                  {product.newPrice ? `₹${product.newPrice}` : (product.price ? product.price : calculatePrice(product.weightInGrams || 0, product.category))}
                 </span>
-                <span className="text-sm font-bold text-black">
-                  {product.newPrice ? `₹ ${product.newPrice}` : calculatePrice(product.weightInGrams || 0)}
-                </span>
+                {product.oldPrice && <span className="text-xs text-gray-400 line-through font-light">₹{product.oldPrice}</span>}
               </div>
               
               <button 

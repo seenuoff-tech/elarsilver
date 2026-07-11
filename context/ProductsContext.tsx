@@ -27,7 +27,6 @@ interface ProductsContextType {
 
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
 
-import { shopProducts } from '../data/shopProducts';
 import { mensProducts } from '../data/mensProducts';
 
 export const ProductsProvider = ({ children }: { children: ReactNode }) => {

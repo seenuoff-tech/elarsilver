@@ -1,267 +1,261 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
-import { shopProducts, ShopProduct } from '../../data/shopProducts';
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
 import { useCart } from '../../context/CartContext';
-import ProductCard3D from '../../components/ProductCard3D';
-import ThreeRing from '../../components/ThreeRing';
+import { useWishlist } from '../../context/WishlistContext';
+import { useProducts } from '../../context/ProductsContext';
+import { usePricing } from '../../components/PricingProvider';
 import LuxuryButton from '../../components/luxury/LuxuryButton';
 
-export default function ShopPage() {
-  const [mounted, setMounted] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<ShopProduct | null>(null);
-  const [quickViewProduct, setQuickViewProduct] = useState<ShopProduct | null>(null);
-  const { triggerPackagingAnimation } = useCart();
-  const [modalSize, setModalSize] = useState('US 7');
+function ShopContent() {
+  const searchParams = useSearchParams();
+  const urlCategory = searchParams.get('category');
+  const urlGender = searchParams.get('gender');
 
-  // Group products by collection
-  const collections: string[] = [];
-  const flagshipProducts: ShopProduct[] = [];
+  const [mounted, setMounted] = useState(false);
+  
+  const { products } = useProducts();
+  const { calculatePrice } = usePricing();
+  const { triggerPackagingAnimation } = useCart();
+  const { wishlist, toggleWishlist } = useWishlist();
+
+  // Filters State
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState('featured'); // 'featured', 'price-asc', 'price-desc'
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (urlCategory) {
+      setSelectedCategories([urlCategory.toLowerCase()]);
+    } else {
+      setSelectedCategories([]);
+    }
+  }, [urlCategory]);
 
-  const handleModalAddToCart = () => {
-    if (!quickViewProduct) return;
-    const prod = quickViewProduct;
-    setQuickViewProduct(null); // Close modal
-    triggerPackagingAnimation(prod, modalSize);
+  const handleAddToCart = (product: any, e: React.MouseEvent) => {
+    e.preventDefault();
+    const finalPriceStr = product.newPrice ? `₹${product.newPrice}` : (product.price ? product.price : calculatePrice(product.weightInGrams || 0, product.category));
+    triggerPackagingAnimation(
+      {
+        id: product.id.toString(),
+        name: product.name,
+        price: finalPriceStr,
+        image: product.image
+      },
+      product.sizes ? product.sizes[0] : 'Standard'
+    );
   };
 
-  return (
-    <div className="bg-[#ffffff] text-black selection:bg-[#ffffff]/20 min-h-screen pt-24 pb-20 relative overflow-hidden">
-      {/* Decorative Grid Background */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full bg-silver-chrome/5 blur-[150px] pointer-events-none" />
+  const handleToggleWishlist = (id: number, e: React.MouseEvent) => {
+    e.preventDefault();
+    toggleWishlist(id);
+  };
 
-      {/* Showroom Header */}
-      <section className="relative py-12 px-6 md:px-12 max-w-4xl mx-auto text-center space-y-4">
-        <span className="text-xs md:text-sm font-semibold tracking-[0.4em] text-silver-chrome uppercase block">
-          Digital Showroom
-        </span>
-        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight uppercase">
-          The 3D Gallery
+  const parsePrice = (priceStr: string | undefined, weight: number = 0, category: string = '') => {
+    if (!priceStr) {
+      priceStr = calculatePrice(weight, category);
+    }
+    return parseFloat(priceStr.replace(/[^\d.]/g, '')) || 0;
+  };
+
+  // Derived state: Filtered & Sorted Products
+  const filteredProducts = useMemo(() => {
+    let filtered = [...products];
+
+    // Filter by Gender logic
+    if (urlGender) {
+      if (urlGender === 'women') {
+        filtered = filtered.filter(p => !p.category.toLowerCase().includes('mens') && !p.category.toLowerCase().includes('kids'));
+      } else if (urlGender === 'men') {
+        filtered = filtered.filter(p => p.category.toLowerCase().includes('mens'));
+      } else if (urlGender === 'kids') {
+        filtered = filtered.filter(p => p.category.toLowerCase().includes('kids'));
+      }
+    }
+
+    // Filter by Categories
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter(p => selectedCategories.some(cat => p.category.toLowerCase().includes(cat.toLowerCase())));
+    }
+
+    // Sort
+    if (sortBy === 'price-asc') {
+      filtered.sort((a, b) => {
+        const priceA = parsePrice(a.newPrice || a.price, a.weightInGrams, a.category);
+        const priceB = parsePrice(b.newPrice || b.price, b.weightInGrams, b.category);
+        return priceA - priceB;
+      });
+    } else if (sortBy === 'price-desc') {
+      filtered.sort((a, b) => {
+        const priceA = parsePrice(a.newPrice || a.price, a.weightInGrams, a.category);
+        const priceB = parsePrice(b.newPrice || b.price, b.weightInGrams, b.category);
+        return priceB - priceA;
+      });
+    }
+
+    return filtered;
+  }, [products, urlGender, selectedCategories, sortBy]);
+
+  const allCategories = ['Rings', 'Necklace', 'Bracelet', 'Earings', 'Anklets', 'Chains', 'Toe rings', 'Mens-Rings', 'Mens-Chains', 'Mens-Bracelet', 'Kids-Earings'];
+
+  const toggleCategory = (cat: string) => {
+    const lowerCat = cat.toLowerCase();
+    setSelectedCategories(prev => 
+      prev.includes(lowerCat) ? prev.filter(c => c !== lowerCat) : [...prev, lowerCat]
+    );
+  };
+
+  if (!mounted) return null;
+
+  return (
+    <div className="bg-[#fafafa] min-h-screen pt-24 pb-20">
+      
+      {/* Header */}
+      <section className="py-12 px-6 md:px-12 text-center bg-white border-b border-gray-200 mt-8">
+        <h1 className="text-3xl md:text-5xl font-bold tracking-widest uppercase text-black">
+          {urlGender ? `${urlGender}'s Jewellery` : 'Our Collection'}
         </h1>
-        <p className="text-black/50 font-light text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-          Hover over cards to activate high-fidelity lighting reflections. Select items for an interactive 360-degree rotation view.
+        <p className="mt-4 text-gray-500 max-w-2xl mx-auto text-sm">
+          Discover our finely crafted pieces designed for timeless elegance. Use the filters to find your perfect match.
         </p>
       </section>
 
-      {/* 3D Showcase Horizontal Scroll Section */}
-      <section className="relative py-12 border-y border-black/5 bg-neutral-50/20 overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.02] bg-[linear-gradient(to_right,#808080_1px,transparent_1px)] bg-[size:60px] pointer-events-none" />
+      <div className="max-w-7xl mx-auto px-6 md:px-12 py-12 flex flex-col md:flex-row gap-8">
         
-        <div className="max-w-7xl mx-auto px-6 md:px-12 mb-6 flex justify-between items-end">
+        {/* Sidebar Filters */}
+        <aside className="w-full md:w-64 shrink-0 space-y-8">
           <div>
-            <span className="text-[10px] tracking-widest text-silver-chrome font-mono uppercase block mb-1">
-              Curated Masterpieces
-            </span>
-            <h2 className="text-2xl font-bold tracking-wider uppercase text-black">
-              Flagship Collection
-            </h2>
-          </div>
-          <span className="text-[10px] tracking-widest text-black/40 uppercase hidden md:block">
-            Swipe or Scroll Horizontally →
-          </span>
-        </div>
-
-        {/* Horizontal Card Track */}
-        <div className="flex gap-8 overflow-x-auto pb-10 pt-4 scrollbar-none snap-x snap-mandatory px-6 md:px-12 max-w-full">
-          {flagshipProducts.map((product) => (
-            <div key={product.id} className="snap-center shrink-0 w-[290px] md:w-[320px]">
-              <ProductCard3D
-                product={product}
-                onQuickView={(p) => {
-                  setQuickViewProduct(p);
-                  setModalSize(p.sizes[0] || 'US 7');
-                }}
-              />
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Grid Collections */}
-      <section className="max-w-7xl mx-auto px-6 md:px-12 py-20 space-y-28">
-        {collections.map((colName) => {
-          const colProducts = shopProducts.filter((p) => p.collection === colName);
-          return (
-            <div key={colName} className="space-y-10">
-              <div className="border-b border-black/10 pb-4">
-                <span className="text-[9px] tracking-widest text-silver-chrome font-mono uppercase block mb-1">
-                  Collection Range
-                </span>
-                <h3 className="text-xl md:text-2xl font-bold tracking-widest uppercase text-black">
-                  {colName}
-                </h3>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {colProducts.map((product) => (
-                  <ProductCard3D
-                    key={product.id}
-                    product={product}
-                    onQuickView={(p) => {
-                      setQuickViewProduct(p);
-                      setModalSize(p.sizes[0] || 'US 7');
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-          );
-        })}
-      </section>
-
-      {/* Quick View Modal */}
-      <AnimatePresence>
-        {quickViewProduct && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-[#ffffff]/95 backdrop-blur-xl p-4 md:p-8"
-          >
-            {/* Close Button */}
-            <LuxuryButton isCTA={false}>
-              <button
-                onClick={() => setQuickViewProduct(null)}
-                className="absolute top-6 right-6 md:top-8 md:right-12 text-black/50 hover:text-black text-xs tracking-widest uppercase flex items-center gap-2 cursor-pointer z-55"
-              >
-                <span>Close</span>
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </LuxuryButton>
-
-            {/* Modal Body */}
-            <motion.div
-              initial={{ scale: 0.95, y: 30 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 30 }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-              className="w-full max-w-6xl h-[85vh] lg:h-[75vh] border border-black/10 bg-neutral-50/40 backdrop-blur-md grid grid-cols-1 lg:grid-cols-2 shadow-[0_50px_100px_rgba(0,0,0,0.9)] overflow-y-auto lg:overflow-hidden relative"
-            >
-              <div className="absolute inset-0 border border-black/5 m-2 pointer-events-none" />
-
-              {/* Left Side: Orbit 360 Viewer */}
-              <div className="relative h-[40vh] lg:h-full border-b lg:border-b-0 lg:border-r border-black/10 flex items-center justify-center bg-[#ffffff]/60">
-                {mounted ? (
-                  <Suspense fallback={
-                    <div className="w-12 h-12 border border-black/20 border-t-white animate-spin rounded-full" />
-                  }>
-                    <Canvas
-                      camera={{ position: [0, 0, 3.8], fov: 45 }}
-                      gl={{ antialias: true }}
-                      className="absolute w-full h-full cursor-grab active:cursor-grabbing"
-                    >
-                      <OrbitControls
-                        enableZoom={false}
-                        autoRotate={!selectedProduct}
-                        autoRotateSpeed={1.8}
-                      />
-                      <ThreeRing
-                        geometryConfig={quickViewProduct.ringGeometry}
-                        isHovered={true}
-                        colorTheme={quickViewProduct.colorTheme}
-                      />
-                    </Canvas>
-                  </Suspense>
-                ) : null}
-
-                <div className="absolute bottom-6 left-6 flex items-center gap-2 text-[9px] tracking-widest uppercase text-black/35 font-mono pointer-events-none">
-                  <svg className="w-4 h-4 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1" />
-                  </svg>
-                  <span>Drag to rotate 360°</span>
-                </div>
-              </div>
-
-              {/* Right Side: Details & Size Form */}
-              <div className="p-8 md:p-12 flex flex-col justify-between h-[45vh] lg:h-full overflow-y-auto space-y-8">
-                <div className="space-y-6">
-                  <div className="flex justify-between items-center text-[10px] tracking-widest font-mono uppercase text-silver-chrome">
-                    <span>{quickViewProduct.collection}</span>
-                    <span className="bg-white/5 border border-black/10 px-2 py-0.5">
-                      {quickViewProduct.hallmark}
-                    </span>
-                  </div>
-
-                  <div className="space-y-2">
-                    <h2 className="text-3xl md:text-4xl font-black tracking-tight uppercase leading-none">
-                      {quickViewProduct.name}
-                    </h2>
-                    <p className="text-black/50 text-sm font-light leading-relaxed">
-                      {quickViewProduct.description}
-                    </p>
-                  </div>
-
-                  <div className="flex items-baseline gap-2 pt-2">
-                    <span className="text-3xl font-extrabold tracking-wide text-black">
-                      {quickViewProduct.price}
-                    </span>
-                    <span className="text-xs text-black/40 line-through">₹7,999</span>
-                    <span className="text-[9px] tracking-wider text-green-400 font-semibold uppercase px-2 py-0.5 border border-green-500/20 bg-green-500/5">
-                      Complimentary Gift Packaging Included
-                    </span>
-                  </div>
-
-                  <div className="space-y-3 pt-2">
-                    <span className="text-[10px] tracking-widest uppercase text-black/40 block">
-                      Select Boutique Size
-                    </span>
-                    <div className="flex gap-2.5 flex-wrap">
-                      {quickViewProduct.sizes.map((size) => (
-                        <LuxuryButton key={size} isCTA={false}>
-                          <button
-                            onClick={() => setModalSize(size)}
-                            className={`px-4 py-2.5 text-xs font-semibold uppercase border rounded-none transition-all duration-300 cursor-pointer ${
-                              modalSize === size
-                                ? 'bg-white text-black border-black shadow-[0_0_10px_rgba(255,255,255,0.4)]'
-                                : 'bg-transparent text-black border-black/20 hover:border-black/50'
-                            }`}
-                          >
-                            {size}
-                          </button>
-                        </LuxuryButton>
-                      ))}
+            <h3 className="text-lg font-bold tracking-widest uppercase text-black border-b border-gray-200 pb-2 mb-4">Categories</h3>
+            <div className="space-y-3">
+              {allCategories.map(cat => {
+                const lowerCat = cat.toLowerCase();
+                const isSelected = selectedCategories.includes(lowerCat);
+                return (
+                  <label key={cat} className="flex items-center gap-3 cursor-pointer group">
+                    <input 
+                      type="checkbox" 
+                      className="hidden" 
+                      checked={isSelected}
+                      onChange={() => toggleCategory(cat)}
+                    />
+                    <div className={`w-4 h-4 border rounded-sm flex items-center justify-center transition-colors ${isSelected ? 'bg-[#0B5E64] border-[#0B5E64]' : 'border-gray-300 group-hover:border-[#0B5E64]'}`}>
+                      {isSelected && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>}
                     </div>
+                    <span className="text-sm text-gray-700 group-hover:text-black">{cat.replace('-', ' ')}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Grid */}
+        <div className="flex-1">
+          <div className="flex justify-between items-center mb-8 border-b border-gray-200 pb-4">
+            <span className="text-sm text-gray-500">{filteredProducts.length} Products Found</span>
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-gray-600">Sort by:</label>
+              <select 
+                value={sortBy} 
+                onChange={(e) => setSortBy(e.target.value)}
+                className="text-sm border-gray-300 rounded-md focus:ring-[#0B5E64] focus:border-[#0B5E64]"
+              >
+                <option value="featured">Featured</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+              </select>
+            </div>
+          </div>
+
+          {filteredProducts.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredProducts.map((product, index) => (
+                <div key={product.id} className="relative flex flex-col group">
+                  <Link href={`/product/${product.id}`} className="block relative aspect-square bg-gray-100 mb-3 overflow-hidden rounded-md">
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    
+                    {/* Rating Badge */}
+                    <div className="absolute bottom-2 left-2 z-20 bg-gray-100/90 text-gray-700 text-[10px] font-medium px-2 py-1 rounded flex items-center gap-1 shadow-sm backdrop-blur-sm pointer-events-none">
+                      <span>4.8</span>
+                      <span className="text-[#f59e0b] text-[10px] leading-none mb-0.5">★</span>
+                      <span className="text-gray-400 mx-0.5">|</span>
+                      <span>{300 + ((index * 47) % 200)}</span>
+                    </div>
+                    
+                    {/* Wishlist Button */}
+                    <button 
+                      onClick={(e) => handleToggleWishlist(product.id as number, e)}
+                      className="absolute top-3 right-3 z-20 w-8 h-8 flex items-center justify-center hover:scale-110 transition-transform"
+                      aria-label="Add to wishlist"
+                    >
+                      {wishlist.includes(product.id as number) ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-red-500">
+                          <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+                        </svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-400 hover:text-red-500 transition-colors">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                        </svg>
+                      )}
+                    </button>
+                  </Link>
+                  
+                  {/* Details */}
+                  <div className="flex flex-col flex-grow px-2 mt-2">
+                    <Link href={`/product/${product.id}`} className="hover:underline">
+                      <h3 className="text-sm font-medium text-gray-900 line-clamp-1 mb-1" title={product.name}>
+                        {product.name}
+                      </h3>
+                    </Link>
+                    
+                    <div className="flex items-center gap-2 mb-5">
+                      <span className="text-[15px] font-bold text-black">
+                        {product.newPrice ? `₹${product.newPrice}` : (product.price ? product.price : calculatePrice(product.weightInGrams || 0, product.category))}
+                      </span>
+                      {product.oldPrice && <span className="text-xs text-gray-400 line-through font-light">₹{product.oldPrice}</span>}
+                    </div>
+                    
+                    <button 
+                      onClick={(e) => handleAddToCart(product, e)}
+                      className="w-full mt-auto py-2.5 bg-[#0B5E64] text-white text-xs font-semibold tracking-wide uppercase rounded-md hover:bg-black transition-colors duration-300 shadow-sm"
+                    >
+                      Add to cart
+                    </button>
                   </div>
                 </div>
-
-                <div className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4 text-[10px] text-black/45 tracking-widest uppercase border-t border-black/10 pt-4">
-                    {quickViewProduct.specs.map((spec, i) => (
-                      <div key={i} className="flex justify-between border-b border-black/5 pb-2">
-                        <span>{spec.label}</span>
-                        <span className="text-black font-medium">{spec.value}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="space-y-3">
-                    <LuxuryButton isCTA={true}>
-                      <button
-                        onClick={handleModalAddToCart}
-                        className="w-full py-4 text-xs font-bold tracking-[0.25em] uppercase bg-white text-black border border-black hover:bg-transparent hover:text-black transition-all duration-500 hover:shadow-[0_0_20px_rgba(255,255,255,0.45)] cursor-pointer"
-                      >
-                        Secure Checkout — Add To Bag
-                      </button>
-                    </LuxuryButton>
-                    <p className="text-[9px] text-black/40 text-center uppercase tracking-widest font-light">
-                      Safe checkout. Rhodium polished tarnish-resistant sterling silver.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20 bg-white rounded-xl border border-gray-200">
+              <h3 className="text-xl text-gray-900 font-medium mb-2">No products found</h3>
+              <p className="text-gray-500">Try adjusting your filters to find what you're looking for.</p>
+              <button 
+                onClick={() => setSelectedCategories([])}
+                className="mt-6 px-6 py-2 bg-[#0B5E64] text-white text-sm font-semibold rounded-lg hover:bg-black transition-colors"
+              >
+                Clear Filters
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
+  );
+}
+
+export default function ShopPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#fafafa] pt-24 pb-20 flex justify-center items-center">Loading...</div>}>
+      <ShopContent />
+    </Suspense>
   );
 }

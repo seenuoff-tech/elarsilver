@@ -331,7 +331,7 @@ export default function ProductRingScroll({ sequenceConfig }: ProductRingScrollP
                 strokeLinejoin="round"
               />
             </svg>
-            <h3 className="text-sm font-semibold tracking-[0.4em] uppercase text-black mt-4">
+            <h3 className="text-sm font-semibold tracking-[0.4em] uppercase text-[#0B5E64] mt-4">
               ELARA SILVER
             </h3>
             <span className="text-[10px] tracking-[0.25em] text-black/40 uppercase">

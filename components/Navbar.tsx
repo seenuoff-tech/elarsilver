@@ -7,7 +7,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
 import LuxuryButton from './luxury/LuxuryButton';
 import SearchOverlay from './luxury/SearchOverlay';
-import { shopProducts } from '../data/shopProducts';
+import { useProducts } from '../context/ProductsContext';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -27,8 +27,9 @@ export default function Navbar() {
 
   const navigationMenu = [
     {
-      name: 'Women category',
+      name: 'Women jewellery',
       items: [
+        { name: 'All', href: '/shop?gender=women' },
         { name: 'Rings', href: '/shop?category=rings' },
         { name: 'Necklace', href: '/shop?category=necklace' },
         { name: 'Minimalist chains', href: '/shop?category=minimalist-chains' },
@@ -40,8 +41,9 @@ export default function Navbar() {
       ]
     },
     {
-      name: 'Men\'s category',
+      name: 'Men\'s jewellery',
       items: [
+        { name: 'All', href: '/shop?gender=men' },
         { name: 'Rings', href: '/shop?category=mens-rings' },
         { name: 'Chains', href: '/shop?category=mens-chains' },
         { name: 'Bracelet', href: '/shop?category=mens-bracelet' },
@@ -49,8 +51,9 @@ export default function Navbar() {
       ]
     },
     {
-      name: 'Kids category',
+      name: 'Kids jewellery',
       items: [
+        { name: 'All', href: '/shop?gender=kids' },
         { name: 'Earings', href: '/shop?category=kids-earings' },
         { name: 'Bracelet', href: '/shop?category=kids-bracelet' },
         { name: 'Anklets', href: '/shop?category=kids-anklets' },
@@ -58,14 +61,14 @@ export default function Navbar() {
     }
   ];
 
+  const { products } = useProducts();
+  
   // Filter products for sidebar search
   const sidebarResults = sidebarQuery.trim() === ''
     ? []
-    : shopProducts.filter(p =>
+    : products.filter(p =>
         p.name.toLowerCase().includes(sidebarQuery.toLowerCase()) ||
-        p.collection.toLowerCase().includes(sidebarQuery.toLowerCase()) ||
-        p.tagline.toLowerCase().includes(sidebarQuery.toLowerCase()) ||
-        p.category.toLowerCase().includes(sidebarQuery.toLowerCase())
+        (p.category && p.category.toLowerCase().includes(sidebarQuery.toLowerCase()))
       ).slice(0, 5);
 
   useEffect(() => {
@@ -128,14 +131,14 @@ export default function Navbar() {
           <div className="flex justify-center items-center w-1/3">
             <Link href="/" className="hover:scale-105 transition-transform duration-500 flex items-center justify-center">
               {isScrolled ? (
-                <span className="text-2xl font-medium tracking-widest text-gray-800 uppercase ml-2">
+                <span className="text-2xl font-medium tracking-widest text-[#0B5E64] uppercase ml-2">
                   ELARA
                 </span>
               ) : (
                 <img 
                   src="/images/Logoorg.png" 
                   alt="Elara Silver Logo" 
-                  className="h-16 md:h-24 object-contain py-1 drop-shadow-sm transition-all duration-500" 
+                  className="h-16 md:h-24 object-contain py-1 drop-shadow-sm transition-all duration-500 brightness-0" 
                 />
               )}
             </Link>
@@ -420,11 +423,45 @@ export default function Navbar() {
                   </div>
                 </div>
               ))}
+              
+              <div 
+                className="flex flex-col gap-6 mt-6 pt-6 border-t border-black/5"
+                style={{
+                  transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-20px)',
+                  opacity: isSidebarOpen ? 1 : 0,
+                  transition: `all 0.5s cubic-bezier(0.16,1,0.3,1) ${0.15 + navigationMenu.length * 0.06}s`
+                }}
+              >
+                <Link
+                  href="/login"
+                  className="text-xs font-bold tracking-[0.2em] uppercase text-black/80 hover:text-[#067964] transition-colors duration-300"
+                  onClick={() => { setIsSidebarOpen(false); setSidebarQuery(''); }}
+                >
+                  LOGIN
+                </Link>
+                <Link
+                  href="/orders"
+                  className="text-xs font-bold tracking-[0.2em] uppercase text-black/80 hover:text-[#067964] transition-colors duration-300"
+                  onClick={() => { setIsSidebarOpen(false); setSidebarQuery(''); }}
+                >
+                  ORDER
+                </Link>
+                <Link
+                  href="/track-order"
+                  className="text-xs font-bold tracking-[0.2em] uppercase text-black/80 hover:text-[#067964] transition-colors duration-300"
+                  onClick={() => { setIsSidebarOpen(false); setSidebarQuery(''); }}
+                >
+                  TRACKORDER
+                </Link>
+              </div>
             </div>
           </div>
 
           {/* Bottom CTA */}
           <div className="p-8 border-t border-black/5 flex flex-col gap-4 bg-gray-50/50 shrink-0">
+            <div className="flex justify-center mb-2">
+              <img src="/images/Logoorg.png" alt="Elara Silver Logo" className="h-12 object-contain drop-shadow-sm brightness-0" />
+            </div>
             {user ? (
               <>
                 <Link 
