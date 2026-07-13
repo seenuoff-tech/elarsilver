@@ -13,10 +13,14 @@ export default function ProductClient() {
   const { id } = useParams();
   const router = useRouter();
   const { products } = useProducts();
-  const product = products.find(p => String(p.id) === String(id));
+  const decodedId = decodeURIComponent(String(id));
+  const product = products.find(p => 
+    String(p.id) === decodedId || 
+    p.name.toLowerCase().replace(/\s+/g, '-') === decodedId.toLowerCase()
+  );
   const { wishlist, toggleWishlist } = useWishlist();
   const { calculatePrice } = usePricing();
-  const { triggerPackagingAnimation } = useCart();
+  const { triggerPackagingAnimation, setIsGiftWrap } = useCart();
   
   const [selectedFinish, setSelectedFinish] = useState(0);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -78,6 +82,9 @@ export default function ProductClient() {
         twist: false, facets: false
       }
     };
+    if (isGift) {
+      setIsGiftWrap(true);
+    }
     triggerPackagingAnimation(mockProduct, 'Standard');
   };
 

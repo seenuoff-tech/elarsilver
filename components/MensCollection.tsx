@@ -91,7 +91,7 @@ export default function MensCollection() {
             )}
             
             {/* Image Container */}
-            <Link href={`/product/${product.id}`} className="aspect-square w-full relative bg-[#f5f5f5] flex items-center justify-center p-0 mb-4 rounded-xl border border-transparent hover:border-black/5 transition-colors block overflow-hidden">
+            <Link href={`/product/${product.name.toLowerCase().replace(/\s+/g, '-')}`} className="aspect-square w-full relative bg-[#f5f5f5] flex items-center justify-center p-0 mb-4 rounded-xl border border-transparent hover:border-black/5 transition-colors block overflow-hidden">
               <Image 
                 src={product.image} 
                 alt={product.name} 

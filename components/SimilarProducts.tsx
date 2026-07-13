@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useWishlist } from '../context/WishlistContext';
 import { useProducts } from '../context/ProductsContext';
 import { useCart } from '../context/CartContext';
+import { usePricing } from './PricingProvider';
 
 interface SimilarProductsProps {
   currentProductId: number;
@@ -15,6 +16,7 @@ export default function SimilarProducts({ currentProductId }: SimilarProductsPro
   const { wishlist, toggleWishlist } = useWishlist();
   const { products } = useProducts();
   const { triggerPackagingAnimation } = useCart();
+  const { calculatePrice } = usePricing();
 
   const handleToggleWishlist = (id: number, e: React.MouseEvent) => {
     e.preventDefault();
@@ -62,7 +64,7 @@ export default function SimilarProducts({ currentProductId }: SimilarProductsPro
             )}
             
             {/* Image Container */}
-            <Link href={`/product/${product.id}`} className="aspect-square w-full relative bg-[#fafafa] flex items-center justify-center p-4 mb-4 rounded-xl border border-gray-100 hover:border-black/10 transition-colors block">
+            <Link href={`/product/${product.name.toLowerCase().replace(/\s+/g, '-')}`} className="aspect-square w-full relative bg-[#fafafa] flex items-center justify-center p-4 mb-4 rounded-xl border border-gray-100 hover:border-black/10 transition-colors block">
               <Image 
                 src={product.image} 
                 alt={product.name} 

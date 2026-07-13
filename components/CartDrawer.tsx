@@ -14,6 +14,8 @@ export default function CartDrawer() {
     addToCartDirect,
     removeFromCart,
     clearCart,
+    isGiftWrap,
+    setIsGiftWrap,
   } = useCart();
 
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -38,7 +40,7 @@ export default function CartDrawer() {
   }, 0);
 
   const formattedSubtotal = `₹${subtotal.toLocaleString('en-IN')}`;
-  const grandTotal = subtotal > 0 ? subtotal + 70 : 0;
+  const grandTotal = subtotal > 0 ? (isGiftWrap ? subtotal + 50 : subtotal) : 0;
   const formattedGrandTotal = `₹${grandTotal.toLocaleString('en-IN')}`;
   
   const router = useRouter();
@@ -189,10 +191,12 @@ export default function CartDrawer() {
                       <span>Subtotal</span>
                       <span className="text-black font-medium">{formattedSubtotal}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Luxury Gift Packaging</span>
-                      <span className="text-black font-medium">₹70</span>
-                    </div>
+                    {isGiftWrap && (
+                      <div className="flex justify-between">
+                        <span>Luxury Gift Packaging</span>
+                        <span className="text-black font-medium">₹50</span>
+                      </div>
+                    )}
                     
                     <div className="w-full h-[1px] bg-black/10 my-2" />
                     
@@ -200,6 +204,18 @@ export default function CartDrawer() {
                       <span>Grand Total</span>
                       <span>{formattedGrandTotal}</span>
                     </div>
+                  </div>
+
+                  {/* Gift Wrap Toggle */}
+                  <div className="flex items-center gap-3 py-1 cursor-pointer group" onClick={() => setIsGiftWrap(!isGiftWrap)}>
+                    <div className={`w-4 h-4 border ${isGiftWrap ? 'bg-[#0B5E64] border-[#0B5E64]' : 'border-black/30 group-hover:border-[#0B5E64]'} flex items-center justify-center transition-colors`}>
+                      {isGiftWrap && (
+                        <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                    <span className="text-xs text-black/70 tracking-wide transition-colors group-hover:text-black">Is this a Gift? 🎁 Wrap it for just (₹50)</span>
                   </div>
 
                   {/* Proceed to Checkout CTA */}
@@ -214,9 +230,7 @@ export default function CartDrawer() {
                         Proceed To Secure Checkout
                       </button>
                     </LuxuryButton>
-                    <p className="text-[8px] text-black/30 text-center uppercase tracking-widest font-light">
-                      SSL Insured Checkout. Rhodium Solid Mirror Finish.
-                    </p>
+
                   </div>
                 </div>
               )}

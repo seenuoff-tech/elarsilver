@@ -175,7 +175,7 @@ function ShopContent() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredProducts.map((product, index) => (
                 <div key={product.id} className="relative flex flex-col group">
-                  <Link href={`/product/${product.id}`} className="block relative aspect-square bg-gray-100 mb-3 overflow-hidden rounded-md">
+                  <Link href={`/product/${product.name.toLowerCase().replace(/\s+/g, '-')}`} className="block relative aspect-square bg-gray-100 mb-3 overflow-hidden rounded-md">
                     <Image
                       src={product.image}
                       alt={product.name}
@@ -211,7 +211,7 @@ function ShopContent() {
                   
                   {/* Details */}
                   <div className="flex flex-col flex-grow px-2 mt-2">
-                    <Link href={`/product/${product.id}`} className="hover:underline">
+                    <Link href={`/product/${product.name.toLowerCase().replace(/\s+/g, '-')}`} className="hover:underline">
                       <h3 className="text-sm font-medium text-gray-900 line-clamp-1 mb-1" title={product.name}>
                         {product.name}
                       </h3>

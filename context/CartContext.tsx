@@ -23,6 +23,8 @@ interface CartContextType {
   addToCartDirect: (product: { id: string; name: string; price: string; image?: string }, size: string) => void;
   removeFromCart: (id: string, size: string) => void;
   clearCart: () => void;
+  isGiftWrap: boolean;
+  setIsGiftWrap: (val: boolean) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -32,6 +34,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cartCount, setCartCount] = useState(0);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [activeAnimation, setActiveAnimation] = useState<{ product: ShopProduct; size: string } | null>(null);
+  const [isGiftWrap, setIsGiftWrap] = useState(false);
 
   // Sync cart count when items change
   useEffect(() => {
@@ -108,6 +111,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         addToCartDirect,
         removeFromCart,
         clearCart,
+        isGiftWrap,
+        setIsGiftWrap
       }}
     >
       {children}

@@ -58,7 +58,7 @@ export default function NewArrivals() {
             )}
             
             {/* Image Container */}
-            <Link href={`/product/${product.id}`} className="aspect-square w-full relative bg-white flex items-center justify-center p-4 mb-4 rounded-xl border border-transparent hover:border-black/5 transition-colors block">
+            <Link href={`/product/${product.name.toLowerCase().replace(/\s+/g, '-')}`} className="aspect-square w-full relative bg-white flex items-center justify-center p-4 mb-4 rounded-xl border border-transparent hover:border-black/5 transition-colors block">
               <Image 
                 src={product.image || '/images/Logoorg.png'} 
                 alt={product.name || 'Product'} 
@@ -95,7 +95,7 @@ export default function NewArrivals() {
             
             {/* Details */}
             <div className="flex flex-col flex-grow px-2 mt-2">
-              <Link href={`/product/${product.id}`} className="hover:underline">
+              <Link href={`/product/${product.name.toLowerCase().replace(/\s+/g, '-')}`} className="hover:underline">
                 <h3 className="text-sm font-medium text-gray-900 line-clamp-1 mb-1" title={product.name}>
                   {product.name}
                 </h3>

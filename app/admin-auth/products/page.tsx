@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import Link from 'next/link';
+import * as XLSX from 'xlsx';
 import { usePricing } from '@/components/PricingProvider';
 import { useProducts, AppProduct } from '@/context/ProductsContext';
 
@@ -329,32 +330,36 @@ export default function ProductsManagement() {
                     const reader = new FileReader();
                     reader.onload = (e) => {
                       try {
-                        const text = e.target?.result as string;
-                        const lines = text.split('\n').filter(line => line.trim() !== '');
+                        const data = e.target?.result;
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const sheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[sheetName];
+                        const json = XLSX.utils.sheet_to_json<any[]>(worksheet, { header: 1 });
                         
                         // Skip header row (index 0)
-                        const newProducts = lines.slice(1).map(line => {
-                          const [id, name, category, weightInGrams, stock, status, image, galleryStr] = line.split(',');
+                        const rows = json.slice(1).filter(row => row.length > 0);
+                        const newProducts = rows.map(row => {
+                          const [id, name, category, weightInGrams, stock, status, image, galleryStr] = row;
                           
                           // Process main image
-                          const mainImage = image?.trim() ? `/images/${image.trim()}` : '';
+                          const mainImage = image ? `/images/${String(image).trim()}` : '';
                           
                           // Process gallery (sub images separated by '|')
                           let gallery: any[] = [];
-                          if (galleryStr?.trim()) {
-                            gallery = galleryStr.split('|').map(img => ({
+                          if (galleryStr) {
+                            gallery = String(galleryStr).split('|').map(img => ({
                               url: `/images/${img.trim()}`,
-                              alt: name?.trim() || 'Subimage'
+                              alt: name || 'Subimage'
                             }));
                           }
 
                           return {
                             id: `PRD-${Math.random().toString(36).substr(2, 5)}`.toUpperCase(),
-                            name: name?.trim() || 'Unknown Product',
-                            category: category?.trim() || 'Uncategorized',
+                            name: String(name || 'Unknown Product').trim(),
+                            category: String(category || 'Uncategorized').trim(),
                             weightInGrams: parseFloat(weightInGrams) || 0,
                             stock: parseInt(stock) || 0,
-                            status: status?.trim() || 'Draft',
+                            status: String(status || 'Draft').trim(),
                             image: mainImage,
                             gallery: gallery
                           };
@@ -373,7 +378,7 @@ export default function ProductsManagement() {
                       setIsBulkUploadOpen(false);
                       setSelectedFile(null);
                     };
-                    reader.readAsText(selectedFile);
+                    reader.readAsArrayBuffer(selectedFile);
                   } else {
                     alert('Please select a file first.');
                   }

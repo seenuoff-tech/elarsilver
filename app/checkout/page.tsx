@@ -8,11 +8,13 @@ import LuxuryButton from '../../components/luxury/LuxuryButton';
 import Image from 'next/image';
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import Script from 'next/script';
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cartItems, clearCart } = useCart();
+  const { cartItems, clearCart, isGiftWrap } = useCart();
   const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'razorpay'>('razorpay');
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderId, setOrderId] = useState('');
   const [orderedItems, setOrderedItems] = useState<any[]>([]);
@@ -40,7 +42,7 @@ export default function CheckoutPage() {
     return acc + numericPrice * item.quantity;
   }, 0);
   
-  const grandTotal = subtotal > 0 ? subtotal + 70 : 0;
+  const grandTotal = subtotal > 0 ? (isGiftWrap ? subtotal + 50 : subtotal) : 0;
   const formattedGrandTotal = `₹${grandTotal.toLocaleString('en-IN')}`;
 
   useEffect(() => {
@@ -66,42 +68,104 @@ export default function CheckoutPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleProcessPayment = (e: React.FormEvent) => {
+  const handleProcessPayment = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
     
-    // Simulate COD order processing
-    setTimeout(async () => {
-      const generatedOrderId = `ELARA-${Math.floor(Math.random() * 900000) + 100000}`;
-      setOrderId(generatedOrderId);
+    if (paymentMethod === 'cod') {
+      setTimeout(async () => {
+        const generatedOrderId = `ELARA-${Math.floor(Math.random() * 900000) + 100000}`;
+        setOrderId(generatedOrderId);
 
-      // Trigger Email API
+        try {
+          await fetch('/api/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId: generatedOrderId,
+              customerData: formData,
+              items: cartItems.map(item => ({
+                name: item.name,
+                quantity: item.quantity,
+                price: item.price
+              })),
+              total: formattedGrandTotal,
+              date: new Date().toLocaleDateString()
+            })
+          });
+        } catch (err) {
+          console.error("Failed to trigger emails", err);
+        }
+
+        setIsProcessing(false);
+        setOrderedItems([...cartItems]);
+        clearCart();
+        setStep(3);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 800);
+    } else {
       try {
-        await fetch('/api/checkout', {
+        const res = await fetch('/api/razorpay', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            orderId: generatedOrderId,
-            customerData: formData,
-            items: cartItems.map(item => ({
-              name: item.name,
-              quantity: item.quantity,
-              price: item.price
-            })),
-            total: formattedGrandTotal,
-            date: new Date().toLocaleDateString()
-          })
+          body: JSON.stringify({ amount: grandTotal })
         });
-      } catch (err) {
-        console.error("Failed to trigger emails", err);
-      }
+        const data = await res.json();
+        
+        if (!data.success) throw new Error(data.error);
 
-      setIsProcessing(false);
-      setOrderedItems([...cartItems]);
-      clearCart();
-      setStep(3);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 800);
+        const options = {
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_TCc7d7U3qTs9gd",
+          amount: data.order.amount,
+          currency: "INR",
+          name: "Elara Silver",
+          description: "Purchase from Elara Silver",
+          image: "/images/elaralogo.png",
+          order_id: data.order.id,
+          handler: async (response: any) => {
+            const generatedOrderId = `ELARA-${Math.floor(Math.random() * 900000) + 100000}`;
+            setOrderId(generatedOrderId);
+            
+            // Trigger Email API here too
+            try {
+              await fetch('/api/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  orderId: generatedOrderId,
+                  customerData: formData,
+                  items: cartItems.map(item => ({ name: item.name, quantity: item.quantity, price: item.price })),
+                  total: formattedGrandTotal,
+                  date: new Date().toLocaleDateString()
+                })
+              });
+            } catch (err) {}
+
+            setIsProcessing(false);
+            setOrderedItems([...cartItems]);
+            clearCart();
+            setStep(3);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          },
+          prefill: {
+            name: formData.fullName,
+            email: formData.email,
+            contact: formData.phone
+          },
+          theme: { color: "#0B5E64" }
+        };
+
+        const paymentObject = new (window as any).Razorpay(options);
+        paymentObject.on('payment.failed', (response: any) => {
+          alert("Payment failed: " + response.error.description);
+          setIsProcessing(false);
+        });
+        paymentObject.open();
+      } catch (err: any) {
+        alert("Failed to initialize payment: " + err.message);
+        setIsProcessing(false);
+      }
+    }
   };
 
     const downloadInvoice = () => {
@@ -320,6 +384,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F5F7] text-black pt-28 pb-20 selection:bg-[#0B5E64] selection:text-white">
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12">
         
         {/* Main Content Area */}
@@ -440,13 +505,35 @@ export default function CheckoutPage() {
                   )}
 
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 pb-2 border-b border-black/10">
-                      <input type="radio" checked readOnly className="w-4 h-4 accent-[#0B5E64]" />
-                      <span className="text-sm font-semibold tracking-wide">Cash On Delivery (COD)</span>
-                    </div>
-                    <p className="text-xs text-black/60 pt-2 pb-4">
-                      Pay conveniently at your doorstep when the product arrives. Razorpay integration will be added in a future update.
-                    </p>
+                    <label className={`flex items-start gap-4 p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'razorpay' ? 'border-[#0B5E64] bg-[#0B5E64]/5 shadow-sm' : 'border-gray-200 hover:border-gray-300'}`}>
+                      <input 
+                        type="radio" 
+                        name="payment_method" 
+                        value="razorpay" 
+                        checked={paymentMethod === 'razorpay'} 
+                        onChange={() => setPaymentMethod('razorpay')}
+                        className="mt-1 w-4 h-4 accent-[#0B5E64]" 
+                      />
+                      <div>
+                        <span className="block text-sm font-semibold tracking-wide text-gray-900">Pay Online (Razorpay)</span>
+                        <p className="text-xs text-gray-500 mt-1">Securely pay via UPI, Credit/Debit Cards, or NetBanking.</p>
+                      </div>
+                    </label>
+
+                    <label className={`flex items-start gap-4 p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'cod' ? 'border-[#0B5E64] bg-[#0B5E64]/5 shadow-sm' : 'border-gray-200 hover:border-gray-300'}`}>
+                      <input 
+                        type="radio" 
+                        name="payment_method" 
+                        value="cod" 
+                        checked={paymentMethod === 'cod'} 
+                        onChange={() => setPaymentMethod('cod')}
+                        className="mt-1 w-4 h-4 accent-[#0B5E64]" 
+                      />
+                      <div>
+                        <span className="block text-sm font-semibold tracking-wide text-gray-900">Cash On Delivery (COD)</span>
+                        <p className="text-xs text-gray-500 mt-1">Pay conveniently at your doorstep when the product arrives.</p>
+                      </div>
+                    </label>
                   </div>
 
                   <div className="pt-6">
@@ -541,10 +628,12 @@ export default function CheckoutPage() {
                 <span>Subtotal</span>
                 <span className="text-black font-semibold">₹{subtotal.toLocaleString('en-IN')}</span>
               </div>
-              <div className="flex justify-between">
-                <span>Luxury Packaging</span>
-                <span className="text-black font-semibold">₹70</span>
-              </div>
+              {isGiftWrap && (
+                <div className="flex justify-between">
+                  <span>Luxury Packaging</span>
+                  <span className="text-black font-semibold">₹50</span>
+                </div>
+              )}
               <div className="flex justify-between pb-4 border-b border-black/10">
                 <span>Shipping & Taxes</span>
                 <span className="text-[#0B5E64] font-bold">Included</span>
