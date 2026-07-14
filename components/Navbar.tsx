@@ -17,6 +17,8 @@ export default function Navbar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const [sidebarQuery, setSidebarQuery] = useState('');
+  const [navSearchQuery, setNavSearchQuery] = useState('');
+  const [isNavSearchActive, setIsNavSearchActive] = useState(false);
   const sidebarInputRef = useRef<HTMLInputElement>(null);
   const { cartCount, setIsCartOpen, isCartOpen } = useCart();
   const { wishlistCount } = useWishlist();
@@ -69,6 +71,13 @@ export default function Navbar() {
     : products.filter(p =>
         p.name.toLowerCase().includes(sidebarQuery.toLowerCase()) ||
         (p.category && p.category.toLowerCase().includes(sidebarQuery.toLowerCase()))
+      ).slice(0, 5);
+
+  const navSearchResults = navSearchQuery.trim() === ''
+    ? []
+    : products.filter(p =>
+        p.name.toLowerCase().includes(navSearchQuery.toLowerCase()) ||
+        (p.category && p.category.toLowerCase().includes(navSearchQuery.toLowerCase()))
       ).slice(0, 5);
 
   useEffect(() => {
@@ -225,6 +234,73 @@ export default function Navbar() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Mobile Search Bar (Visible only on mobile) */}
+        <div 
+          className={`md:hidden transition-all duration-500 ease-in-out relative ${
+            showLinks ? 'max-h-[500px] opacity-100 pb-4 overflow-visible' : 'max-h-0 opacity-0 pb-0 overflow-hidden'
+          }`}
+        >
+          <div className="flex items-center border border-gray-300 rounded-md bg-white h-11 relative z-50 overflow-hidden">
+            <input 
+              type="text"
+              placeholder='Search "Gifts For Her"'
+              className="flex-grow px-4 text-[13px] text-gray-800 font-medium tracking-wide outline-none w-full h-full bg-transparent"
+              value={navSearchQuery}
+              onChange={(e) => setNavSearchQuery(e.target.value)}
+              onFocus={() => setIsNavSearchActive(true)}
+              onBlur={() => setTimeout(() => setIsNavSearchActive(false), 200)}
+            />
+            <div className="px-4 text-gray-500 bg-white">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Mobile Material Toggle */}
+          <div className="flex items-center border border-[#D4AF37] rounded-full p-1 mt-3 mx-auto max-w-[300px]">
+            <button
+              onClick={() => setActiveMaterial('Silver')}
+              className={`flex-1 py-2 text-[11px] font-medium rounded-full transition-all duration-300 flex items-center justify-center ${activeMaterial === 'Silver' ? 'bg-[#0B5E64] text-white shadow-md' : 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-50'}`}
+            >
+              Silver Jewellery
+            </button>
+            <button
+              onClick={() => setActiveMaterial('Sleet')}
+              className={`flex-1 py-2 text-[11px] font-medium rounded-full transition-all duration-300 flex items-center justify-center ${activeMaterial === 'Sleet' ? 'bg-[#0B5E64] text-white shadow-md' : 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-50'}`}
+            >
+              Sleet Jewellery
+            </button>
+          </div>
+
+          {/* Search Dropdown */}
+          {isNavSearchActive && navSearchQuery.trim() !== '' && (
+            <div className="absolute top-12 left-0 w-full bg-white border border-gray-200 shadow-2xl rounded-md overflow-hidden z-50 mt-1 max-h-80 overflow-y-auto">
+              {navSearchResults.length > 0 ? (
+                navSearchResults.map((product) => (
+                  <Link 
+                    key={product.id} 
+                    href={`/product/${product.id}`}
+                    className="flex items-center gap-4 p-3 hover:bg-gray-50 border-b border-gray-100 last:border-0 transition-colors"
+                    onClick={() => {
+                      setNavSearchQuery('');
+                      setIsNavSearchActive(false);
+                    }}
+                  >
+                    <img src={product.image} alt={product.name} className="w-12 h-12 object-cover rounded-md border border-gray-100" />
+                    <div className="flex flex-col">
+                      <span className="text-[13px] font-bold text-gray-900 tracking-wider uppercase">{product.name}</span>
+                      <span className="text-[11px] text-gray-500 font-semibold">{product.price}</span>
+                    </div>
+                  </Link>
+                ))
+              ) : (
+                <div className="p-6 text-center text-[13px] text-gray-500 tracking-wider uppercase">No results found for "{navSearchQuery}"</div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Bottom Row: Links — hidden on mobile, visible md+ */}

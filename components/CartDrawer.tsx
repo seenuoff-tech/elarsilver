@@ -141,13 +141,7 @@ export default function CartDrawer() {
                             <span>{item.price}</span>
                           </div>
                           
-                          {/* Gifting Box Badge */}
-                          <span className="inline-flex items-center gap-1 text-[8px] tracking-wider uppercase text-silver-chrome font-semibold bg-white/5 border border-black/5 px-2 py-0.5 rounded-none">
-                            <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                            </svg>
-                            Velvet Gifting Box Included
-                          </span>
+
                         </div>
                       </div>
 

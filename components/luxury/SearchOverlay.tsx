@@ -219,7 +219,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
       {/* Main Glassmorphism container */}
       <div
         ref={boxRef}
-        className="relative w-full max-w-2xl bg-neutral-50/70 border border-black/10 p-8 md:p-12 shadow-[0_40px_80px_rgba(0,0,0,0.95)] z-10 mx-4"
+        className="relative w-full h-full md:h-auto max-w-2xl bg-neutral-50/90 md:bg-neutral-50/70 md:border md:border-black/10 p-8 md:p-12 shadow-none md:shadow-[0_40px_80px_rgba(0,0,0,0.95)] z-10 mx-0 md:mx-4 overflow-y-auto md:overflow-visible"
       >
         {/* Premium Gold Accents */}
         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-70" />

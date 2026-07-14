@@ -262,22 +262,7 @@ export default function AddToCartAnimation() {
         </AnimatePresence>
       </motion.div>
 
-      {/* Subtitles */}
-      <div className="absolute bottom-16 text-center space-y-2 pointer-events-none z-[1000]">
-        <motion.p
-          key={step}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          className="text-xs md:text-sm font-semibold tracking-[0.3em] uppercase text-silver-chrome"
-        >
-          {step === 1 && 'Lifting Signature Piece...'}
-          {step === 2 && 'Opening Velvet Presentation Box...'}
-          {step === 3 && 'Settling into Velvet Cushion...'}
-          {step === 4 && 'Wrapping in Silver Ribbon & Bow...'}
-          {step === 5 && 'Securing Package into Shopping Bag...'}
-        </motion.p>
-      </div>
+
     </div>
   );
 }

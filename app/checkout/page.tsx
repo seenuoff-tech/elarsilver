@@ -461,7 +461,7 @@ export default function CheckoutPage() {
 
                   <div className="pt-6">
                     <LuxuryButton isCTA={true} className="w-full md:w-auto">
-                      <button type="submit" className="w-full md:w-auto px-10 py-4 bg-[#0B5E64] text-white text-xs font-bold tracking-[0.2em] uppercase hover:bg-black transition-colors duration-500 shadow-xl shadow-black/10">
+                      <button type="submit" className="w-full md:w-auto px-10 py-4 bg-[#0B5E64] text-white text-xs font-bold tracking-[0.2em] uppercase transition-opacity duration-500 hover:opacity-90 shadow-xl shadow-black/10">
                         Continue to Payment
                       </button>
                     </LuxuryButton>
@@ -538,8 +538,8 @@ export default function CheckoutPage() {
 
                   <div className="pt-6">
                     <LuxuryButton isCTA={true} className="w-full">
-                      <button type="submit" disabled={isProcessing} className="w-full px-10 py-5 bg-[#0B5E64] text-white text-xs font-bold tracking-[0.2em] uppercase hover:bg-black transition-colors duration-500 shadow-xl shadow-black/10 disabled:opacity-50">
-                        {isProcessing ? 'Placing Order...' : `Place Order (COD)`}
+                      <button type="submit" disabled={isProcessing} className="w-full px-10 py-5 bg-[#0B5E64] text-white text-xs font-bold tracking-[0.2em] uppercase transition-opacity duration-500 hover:opacity-90 shadow-xl shadow-black/10 disabled:opacity-50">
+                        {isProcessing ? 'Placing Order...' : (paymentMethod === 'razorpay' ? 'Pay Securely Online' : 'Place Order')}
                       </button>
                     </LuxuryButton>
                   </div>

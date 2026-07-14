@@ -42,17 +42,17 @@ const sections = [
   },
   {
     title: '9. Governing Law',
-    content: `These Terms and Conditions are governed by and construed in accordance with the laws of India. Any disputes arising under or in connection with these terms shall be subject to the exclusive jurisdiction of the courts located in Mumbai, Maharashtra. Both parties consent to personal jurisdiction in such courts and waive any objection to such jurisdiction or venue.`,
+    content: `These Terms and Conditions are governed by and construed in accordance with the laws of India. Any disputes arising under or in connection with these terms shall be subject to the exclusive jurisdiction of the courts located in Tamil Nadu. Both parties consent to personal jurisdiction in such courts and waive any objection to such jurisdiction or venue.`,
   },
   {
     title: '10. Contact Information',
-    content: `If you have any questions regarding these Terms and Conditions, please reach out to us at legal@elarasilver.com or write to us at Elara Silver, Atelier Mumbai, Colaba Causeway, Block A, Mumbai, MH 400001. Our client services team is available Monday through Saturday, 10:00–19:00 IST.`,
+    content: `If you have any questions regarding these Terms and Conditions, please reach out to us at info@elarasilver.com or call us at +91 6369825925, or write to us at ELARA SILVER, 130/134 A North car street, srivilliputtur 626125 tamilnadu. Our client services team is available Monday through Saturday, 10:00–19:00 IST.`,
   },
 ];
 
 export default function TermsAndConditionsPage() {
   return (
-    <div className="bg-white text-black min-h-screen pt-28 pb-24">
+    <div className="bg-white text-black min-h-screen pt-[220px] md:pt-[280px] pb-24">
       {/* Header */}
       <section className="relative px-6 md:px-12 max-w-4xl mx-auto text-center space-y-5 pb-16">
         <div className="flex items-center justify-center gap-4 mb-2">
@@ -67,7 +67,7 @@ export default function TermsAndConditionsPage() {
           Please read these terms carefully before using our website or purchasing any of our curated silver creations.
         </p>
         <p className="text-[11px] text-black/30 font-light tracking-widest uppercase">
-          Last Updated: June 2025
+          Last Updated: July 2026
         </p>
       </section>
 
@@ -93,23 +93,7 @@ export default function TermsAndConditionsPage() {
         ))}
       </section>
 
-      {/* Footer CTA */}
-      <div className="max-w-4xl mx-auto px-6 md:px-12 mt-20">
-        <div className="h-[1px] bg-gradient-to-r from-transparent via-black/10 to-transparent mb-12" />
-        <div className="bg-[#0B5E64]/5 border border-[#0B5E64]/15 p-8 md:p-12 text-center space-y-4">
-          <span className="text-[10px] font-semibold tracking-[0.4em] text-[#0B5E64] uppercase block">Need Clarity?</span>
-          <h3 className="text-xl font-bold tracking-wider uppercase text-black">Speak with our team</h3>
-          <p className="text-black/50 text-sm font-light max-w-sm mx-auto">
-            If you have any questions about our terms, our concierge team is here to help.
-          </p>
-          <Link
-            href="/contact"
-            className="inline-block mt-4 px-8 py-3 bg-[#0B5E64] text-white text-xs font-bold tracking-[0.25em] uppercase hover:bg-black transition-colors duration-300"
-          >
-            Contact Us
-          </Link>
-        </div>
-      </div>
+
     </div>
   );
 }
